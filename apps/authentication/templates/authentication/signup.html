@@ -1,0 +1,218 @@
+{% extends 'authentication/base.html' %}
+
+{% block content %}
+<div class="w-full max-w-6xl grid gap-6 lg:grid-cols-[0.98fr_1.02fr] items-stretch">
+    <section class="relative overflow-hidden rounded-3xl border border-slate-800/70 bg-gradient-to-br from-slate-950/90 via-slate-900/75 to-sky-950/70 p-8 md:p-10 shadow-2xl">
+        <div class="absolute -top-20 right-0 h-56 w-56 rounded-full bg-sky-500/10 blur-3xl"></div>
+        <div class="absolute -bottom-24 left-0 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl"></div>
+        <div class="relative space-y-6">
+            <div class="inline-flex items-center gap-2 rounded-full border border-slate-700/60 bg-slate-950/60 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.28em] text-slate-300">
+                Get Started
+            </div>
+            <div>
+                <h1 class="max-w-xl text-4xl font-black tracking-tight text-white md:text-5xl">
+                    Create your student or teacher profile in a few steps.
+                </h1>
+                <p class="mt-4 max-w-xl text-sm leading-6 text-slate-300 md:text-base">
+                    Build a MindSync account to unlock planning tools, analytics, and AI-assisted learning support across the platform.
+                </p>
+            </div>
+
+            <div class="grid gap-3 sm:grid-cols-3">
+                <div class="rounded-2xl border border-slate-800/70 bg-slate-950/60 p-4">
+                    <p class="text-[10px] uppercase tracking-[0.24em] text-slate-500">Profiles</p>
+                    <p class="mt-2 text-sm font-semibold text-white">Student or teacher</p>
+                </div>
+                <div class="rounded-2xl border border-slate-800/70 bg-slate-950/60 p-4">
+                    <p class="text-[10px] uppercase tracking-[0.24em] text-slate-500">Access</p>
+                    <p class="mt-2 text-sm font-semibold text-white">Dashboard ready</p>
+                </div>
+                <div class="rounded-2xl border border-slate-800/70 bg-slate-950/60 p-4">
+                    <p class="text-[10px] uppercase tracking-[0.24em] text-slate-500">Support</p>
+                    <p class="mt-2 text-sm font-semibold text-white">AI guidance included</p>
+                </div>
+            </div>
+
+            <div class="rounded-2xl border border-sky-500/20 bg-sky-950/30 p-5 text-sm text-slate-300">
+                Registration keeps the interface lightweight and responsive so setup stays quick on desktop and mobile.
+            </div>
+        </div>
+    </section>
+
+    <div id="signup-card" class="card-float w-full max-w-none rounded-3xl border border-slate-800 bg-slate-900/80 p-8 shadow-2xl backdrop-blur-md md:p-10">
+        <div class="text-center mb-6">
+            <h1 id="signup-title" class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 to-sky-400 bg-clip-text text-transparent transition-all duration-200">
+                Join MindSync AI
+            </h1>
+            <p id="signup-subtitle" class="text-sm text-slate-400 mt-2">Empowering student success and emotional wellness</p>
+        </div>
+
+        <div id="signup-alert" class="hidden mb-4 text-xs rounded-lg px-3 py-2 border"></div>
+
+        <form method="POST" action="{% url 'signup' %}" id="signup-form" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-400">Username</label>
+                <input type="text" name="username" id="username" required
+                       class="js-focus-field w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-slate-200 transition-colors focus:border-indigo-500 focus:outline-none">
+                <p class="mt-1 text-[10px] text-slate-500">Characters: <span id="username-char-count">0</span></p>
+            </div>
+
+            <div>
+                <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-400">Email Address</label>
+                <input type="email" name="email" id="email" required
+                       class="js-focus-field w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-slate-200 transition-colors focus:border-indigo-500 focus:outline-none">
+                <p class="mt-1 text-[10px] text-slate-500">Characters: <span id="email-char-count">0</span></p>
+            </div>
+
+            <div>
+                <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-400">Password</label>
+                <div class="relative">
+                    <input type="password" name="password" id="password" required
+                           class="js-focus-field w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 pr-24 text-slate-200 transition-colors focus:border-indigo-500 focus:outline-none">
+                    <button type="button" id="toggle-signup-password" class="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg border border-slate-700 px-2 py-1 text-[11px] text-slate-300 hover:border-indigo-500 hover:text-white">
+                        Show
+                    </button>
+                </div>
+                <p class="mt-1 text-[10px] text-slate-500">Characters: <span id="password-char-count">0</span></p>
+                <p id="signup-caps-warning" class="hidden mt-1 text-[10px] text-amber-300">Caps Lock is ON</p>
+            </div>
+
+            <div>
+                <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-400">Select System Identity Role</label>
+                <select name="role" required
+                        class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2.5 text-slate-300 transition-colors focus:border-indigo-500 focus:outline-none">
+                    <option value="student" selected>Student Identity Profile</option>
+                    <option value="teacher">Teacher Administrative Dashboard</option>
+                </select>
+            </div>
+
+            <button type="submit" id="signup-btn"
+                class="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 px-4 py-3 font-medium text-white shadow-lg transition-all duration-150 hover:from-indigo-500 hover:to-sky-500 active:scale-[0.98]">
+                Complete Registration
+            </button>
+        </form>
+
+        <div class="mt-6 text-center text-sm text-slate-400">
+            Already have an account?
+            <a href="{% url 'login' %}" class="font-medium text-indigo-400 hover:underline">Log In</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const form = document.getElementById('signup-form');
+        const username = document.getElementById('username');
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const alertBox = document.getElementById('signup-alert');
+        const signupBtn = document.getElementById('signup-btn');
+        const togglePassword = document.getElementById('toggle-signup-password');
+        const signupCard = document.getElementById('signup-card');
+        const title = document.getElementById('signup-title');
+        const subtitle = document.getElementById('signup-subtitle');
+        const capsWarning = document.getElementById('signup-caps-warning');
+
+        const usernameCount = document.getElementById('username-char-count');
+        const emailCount = document.getElementById('email-char-count');
+        const passwordCount = document.getElementById('password-char-count');
+
+        function showAlert(message, type) {
+            alertBox.classList.remove('hidden', 'border-rose-500/50', 'bg-rose-950/40', 'text-rose-200', 'border-emerald-500/50', 'bg-emerald-950/40', 'text-emerald-200');
+            if (type === 'success') {
+                alertBox.classList.add('border-emerald-500/50', 'bg-emerald-950/40', 'text-emerald-200');
+            } else {
+                alertBox.classList.add('border-rose-500/50', 'bg-rose-950/40', 'text-rose-200');
+            }
+            alertBox.textContent = message;
+        }
+
+        function updateCounters() {
+            usernameCount.textContent = String((username.value || '').length);
+            emailCount.textContent = String((email.value || '').length);
+            passwordCount.textContent = String((password.value || '').length);
+        }
+
+        [username, email, password].forEach((field) => {
+            field.addEventListener('focus', () => field.classList.add('focus-highlight'));
+            field.addEventListener('blur', () => field.classList.remove('focus-highlight'));
+            field.addEventListener('keydown', () => {
+                subtitle.textContent = 'Typing in progress. Your profile setup is almost done.';
+                updateCounters();
+            });
+            field.addEventListener('mouseover', () => signupCard.classList.add('ring-1', 'ring-sky-500/30'));
+            field.addEventListener('mouseout', () => signupCard.classList.remove('ring-1', 'ring-sky-500/30'));
+        });
+
+        togglePassword.addEventListener('click', () => {
+            const hidden = password.type === 'password';
+            password.type = hidden ? 'text' : 'password';
+            togglePassword.textContent = hidden ? 'Hide' : 'Show';
+        });
+
+        function updateCapsWarning(event) {
+            if (!event || typeof event.getModifierState !== 'function') {
+                return;
+            }
+            const isOn = event.getModifierState('CapsLock');
+            capsWarning.classList.toggle('hidden', !isOn);
+        }
+
+        password.addEventListener('keydown', updateCapsWarning);
+        password.addEventListener('keyup', updateCapsWarning);
+
+        signupBtn.addEventListener('click', () => {
+            signupBtn.classList.add('pulse-click', 'from-emerald-600', 'to-teal-600');
+            showAlert('Welcome! Creating your account...', 'success');
+            setTimeout(() => signupBtn.classList.remove('pulse-click'), 350);
+        });
+
+        title.addEventListener('mouseover', () => {
+            title.textContent = 'MindSync AI Registration';
+            title.classList.add('tracking-wider');
+        });
+
+        title.addEventListener('mouseout', () => {
+            title.textContent = 'Join MindSync AI';
+            title.classList.remove('tracking-wider');
+        });
+
+        form.addEventListener('submit', function (event) {
+            const userValue = (username.value || '').trim();
+            const emailValue = (email.value || '').trim();
+            const passValue = (password.value || '').trim();
+
+            if (!userValue || !emailValue) {
+                event.preventDefault();
+                showAlert('Username and email are required.', 'error');
+                return;
+            }
+
+            if (!passValue) {
+                event.preventDefault();
+                showAlert('Password field is required.', 'error');
+                password.focus();
+                return;
+            }
+
+            if (passValue.length < 4) {
+                event.preventDefault();
+                showAlert('Password must contain at least 4 characters.', 'error');
+                password.focus();
+                return;
+            }
+
+            showAlert('Registration request submitted.', 'success');
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.ctrlKey && event.key === 'Enter') {
+                form.requestSubmit();
+            }
+        });
+
+        updateCounters();
+    })();
+</script>
+{% endblock %}

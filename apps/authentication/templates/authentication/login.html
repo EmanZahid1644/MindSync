@@ -1,0 +1,192 @@
+{% extends 'authentication/base.html' %}
+
+{% block content %}
+<div class="w-full max-w-6xl grid gap-6 lg:grid-cols-[1.08fr_0.92fr] items-stretch">
+    <section class="relative overflow-hidden rounded-3xl border border-slate-800/70 bg-gradient-to-br from-slate-950/90 via-slate-900/75 to-indigo-950/70 p-8 md:p-10 shadow-2xl">
+        <div class="absolute -top-20 right-0 h-56 w-56 rounded-full bg-indigo-500/10 blur-3xl"></div>
+        <div class="absolute -bottom-24 left-0 h-64 w-64 rounded-full bg-sky-500/10 blur-3xl"></div>
+        <div class="relative space-y-6">
+            <div class="inline-flex items-center gap-2 rounded-full border border-slate-700/60 bg-slate-950/60 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.28em] text-slate-300">
+                Secure Access
+            </div>
+            <div>
+                <h1 class="max-w-xl text-4xl font-black tracking-tight text-white md:text-5xl">
+                    One dashboard for study planning, coaching, and progress tracking.
+                </h1>
+                <p class="mt-4 max-w-xl text-sm leading-6 text-slate-300 md:text-base">
+                    Sign in to continue your academic workflow with AI-guided insights, saved resources, and personalized support.
+                </p>
+            </div>
+
+            <div class="grid gap-3 sm:grid-cols-3">
+                <div class="rounded-2xl border border-slate-800/70 bg-slate-950/60 p-4">
+                    <p class="text-[10px] uppercase tracking-[0.24em] text-slate-500">Fast entry</p>
+                    <p class="mt-2 text-sm font-semibold text-white">Quick login flow</p>
+                </div>
+                <div class="rounded-2xl border border-slate-800/70 bg-slate-950/60 p-4">
+                    <p class="text-[10px] uppercase tracking-[0.24em] text-slate-500">Smart support</p>
+                    <p class="mt-2 text-sm font-semibold text-white">AI coach access</p>
+                </div>
+                <div class="rounded-2xl border border-slate-800/70 bg-slate-950/60 p-4">
+                    <p class="text-[10px] uppercase tracking-[0.24em] text-slate-500">Responsive</p>
+                    <p class="mt-2 text-sm font-semibold text-white">Works on any screen</p>
+                </div>
+            </div>
+
+            <div class="rounded-2xl border border-indigo-500/20 bg-indigo-950/30 p-5 text-sm text-slate-300">
+                Keep your session secure and return to the dashboard instantly after authentication.
+            </div>
+        </div>
+    </section>
+
+    <div id="login-card" class="card-float w-full max-w-none rounded-3xl border border-slate-800 bg-slate-900/80 p-8 shadow-2xl backdrop-blur-md md:p-10">
+        <div class="text-center mb-8">
+            <h1 id="login-title" class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 to-sky-400 bg-clip-text text-transparent transition-all duration-200">
+                MindSync AI
+            </h1>
+            <p id="login-subtitle" class="text-sm text-slate-400 mt-2">Sign in to your intelligent academic hub</p>
+        </div>
+
+        <div id="login-alert" class="hidden mb-4 text-xs rounded-lg px-3 py-2 border"></div>
+
+        <form method="POST" action="{% url 'login' %}" class="space-y-5" id="login-form">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Username</label>
+                <input type="text" name="username" id="login-username" required autocomplete="username"
+                       class="js-focus-field w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 text-slate-200 placeholder-slate-600 transition-colors focus:border-indigo-500 focus:outline-none">
+                <p class="mt-1 text-[10px] text-slate-500">Characters: <span id="username-counter">0</span></p>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Password</label>
+                <div class="relative">
+                    <input type="password" name="password" id="login-password" required autocomplete="current-password"
+                           class="js-focus-field w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 pr-24 text-slate-200 placeholder-slate-600 transition-colors focus:border-indigo-500 focus:outline-none">
+                    <button type="button" id="toggle-login-password" class="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg border border-slate-700 px-2 py-1 text-[11px] text-slate-300 hover:border-indigo-500 hover:text-white">
+                        Show
+                    </button>
+                </div>
+                <p class="mt-1 text-[10px] text-slate-500">Characters: <span id="password-counter">0</span></p>
+                <p id="login-caps-warning" class="hidden mt-1 text-[10px] text-amber-300">Caps Lock is ON</p>
+            </div>
+
+            <button type="submit" id="login-btn"
+                    class="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 px-4 py-3 font-medium text-white shadow-lg shadow-indigo-900/30 transition-all duration-150 hover:from-indigo-500 hover:to-sky-500 active:scale-[0.98]">
+                Sign In
+            </button>
+        </form>
+
+        <div class="mt-6 text-center text-sm text-slate-400">
+            Don't have an account?
+            <a href="{% url 'signup' %}" class="font-medium text-indigo-400 hover:underline">Create one here</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const form = document.getElementById('login-form');
+        const username = document.getElementById('login-username');
+        const password = document.getElementById('login-password');
+        const usernameCounter = document.getElementById('username-counter');
+        const passwordCounter = document.getElementById('password-counter');
+        const loginBtn = document.getElementById('login-btn');
+        const alertBox = document.getElementById('login-alert');
+        const togglePasswordBtn = document.getElementById('toggle-login-password');
+        const title = document.getElementById('login-title');
+        const subtitle = document.getElementById('login-subtitle');
+        const loginCard = document.getElementById('login-card');
+        const capsWarning = document.getElementById('login-caps-warning');
+
+        function showAlert(message, type) {
+            alertBox.classList.remove('hidden', 'border-rose-500/50', 'bg-rose-950/40', 'text-rose-200', 'border-emerald-500/50', 'bg-emerald-950/40', 'text-emerald-200');
+            if (type === 'success') {
+                alertBox.classList.add('border-emerald-500/50', 'bg-emerald-950/40', 'text-emerald-200');
+            } else {
+                alertBox.classList.add('border-rose-500/50', 'bg-rose-950/40', 'text-rose-200');
+            }
+            alertBox.textContent = message;
+        }
+
+        function updateCounters() {
+            usernameCounter.textContent = String((username.value || '').length);
+            passwordCounter.textContent = String((password.value || '').length);
+        }
+
+        [username, password].forEach((field) => {
+            field.addEventListener('focus', () => field.classList.add('focus-highlight'));
+            field.addEventListener('blur', () => field.classList.remove('focus-highlight'));
+            field.addEventListener('keydown', () => {
+                subtitle.textContent = 'Typing detected. Keep going.';
+                updateCounters();
+            });
+            field.addEventListener('mouseover', () => {
+                loginCard.classList.add('ring-1', 'ring-indigo-500/30');
+            });
+            field.addEventListener('mouseout', () => {
+                loginCard.classList.remove('ring-1', 'ring-indigo-500/30');
+            });
+        });
+
+        togglePasswordBtn.addEventListener('click', () => {
+            const isPassword = password.type === 'password';
+            password.type = isPassword ? 'text' : 'password';
+            togglePasswordBtn.textContent = isPassword ? 'Hide' : 'Show';
+        });
+
+        function updateCapsWarning(event) {
+            if (!event || typeof event.getModifierState !== 'function') {
+                return;
+            }
+            const isOn = event.getModifierState('CapsLock');
+            capsWarning.classList.toggle('hidden', !isOn);
+        }
+
+        password.addEventListener('keydown', updateCapsWarning);
+        password.addEventListener('keyup', updateCapsWarning);
+
+        loginBtn.addEventListener('click', () => {
+            loginBtn.classList.add('pulse-click', 'from-emerald-600', 'to-teal-600');
+            showAlert('Welcome! Checking your credentials...', 'success');
+            setTimeout(() => loginBtn.classList.remove('pulse-click'), 350);
+        });
+
+        title.addEventListener('mouseover', () => {
+            title.textContent = 'MindSync AI Login';
+            title.classList.add('tracking-widest');
+        });
+        title.addEventListener('mouseout', () => {
+            title.textContent = 'MindSync AI';
+            title.classList.remove('tracking-widest');
+        });
+
+        form.addEventListener('submit', (event) => {
+            const userValue = (username.value || '').trim();
+            const passValue = (password.value || '').trim();
+
+            if (!userValue) {
+                event.preventDefault();
+                showAlert('Username field is required.', 'error');
+                username.focus();
+                return;
+            }
+            if (!passValue) {
+                event.preventDefault();
+                showAlert('Password field is required.', 'error');
+                password.focus();
+                return;
+            }
+            showAlert('Login request submitted successfully.', 'success');
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.ctrlKey && event.key === 'Enter') {
+                form.requestSubmit();
+            }
+        });
+
+        updateCounters();
+    })();
+</script>
+{% endblock %}

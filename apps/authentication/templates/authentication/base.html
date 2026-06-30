@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindSync AI - Student Success & Wellness</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Modern backdrop blend for dashboard presentation */
+        body { background: radial-gradient(circle at top right, #1e1b4b, #0f172a); }
+
+        body.light-theme {
+            background: radial-gradient(circle at top right, #dbeafe, #f8fafc);
+            color: #0f172a;
+        }
+
+        body.light-theme footer {
+            color: #475569;
+        }
+
+        .focus-highlight {
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.35);
+            border-color: #38bdf8 !important;
+        }
+
+        .pulse-click {
+            animation: pulseClick 0.35s ease-in-out;
+        }
+
+        @keyframes pulseClick {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.97); }
+            100% { transform: scale(1); }
+        }
+
+        .card-float:hover {
+            transform: translateY(-2px);
+            transition: transform 0.18s ease;
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between font-sans">
+
+    <button id="theme-toggle-btn" class="fixed top-4 left-4 z-50 text-xs font-bold px-3 py-2 rounded-lg border border-slate-700 bg-slate-950/80 text-slate-200 hover:bg-slate-900 transition">
+        Toggle Theme
+    </button>
+
+    <div class="fixed top-5 right-5 z-50 flex flex-col gap-3" id="toast-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="p-4 rounded-lg shadow-xl text-sm font-semibold transition-all duration-300 transform translate-x-0 flex items-center gap-3
+                    {% if message.tags == 'success' %} bg-emerald-600 text-white border-l-4 border-emerald-400
+                    {% elif message.tags == 'error' %} bg-rose-600 text-white border-l-4 border-rose-400
+                    {% else %} bg-sky-600 text-white border-l-4 border-sky-400 {% endif %}"
+                     role="alert">
+                    <span>{{ message }}</span>
+                    <button onclick="this.parentElement.remove()" class="text-white hover:text-slate-200 font-bold ml-auto">&times;</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <main class="flex-grow flex items-center justify-center p-4">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="mt-8 border-t border-slate-800/70 bg-slate-950/85 backdrop-blur-sm">
+        <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-5">
+            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div class="space-y-1 text-center md:text-left">
+                    <p class="text-sm font-semibold tracking-wide text-slate-200">MindSync AI</p>
+                    <p class="text-xs text-slate-500">Student success, intelligent planning, and wellness support.</p>
+                </div>
+
+                <nav class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-medium text-slate-400">
+                    <a href="{% url 'about_us' %}" class="transition-colors hover:text-white">About Us</a>
+                    <a href="{% url 'products' %}" class="transition-colors hover:text-white">Products</a>
+                    <a href="{% url 'contact_us' %}" class="transition-colors hover:text-white">Contact Us</a>
+                </nav>
+
+                <p class="text-center md:text-right text-[11px] uppercase tracking-[0.24em] text-slate-600">&copy; 2026 MindSync AI</p>
+            </div>
+        </div>
+    </footer>
+
+    {% if user.is_authenticated %}
+    <div id="floating-ai-assistant" class="fixed bottom-5 right-5 z-50">
+        <div id="ai-assistant-panel" class="hidden w-[340px] max-w-[calc(100vw-1.5rem)] rounded-2xl border border-slate-800/70 bg-slate-950/95 shadow-2xl overflow-hidden">
+            <div class="px-4 py-3 border-b border-slate-800/70 bg-gradient-to-r from-indigo-900/50 to-slate-900/80">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-xs font-black tracking-wider text-white uppercase">Floating AI Assistant</h3>
+                        <p class="text-[10px] text-slate-400">Quick help, recommendations, and search prompts</p>
+                    </div>
+                    <button id="ai-assistant-close" class="text-slate-400 hover:text-white text-lg leading-none">&times;</button>
+                </div>
+            </div>
+
+            <div class="p-3 space-y-2 border-b border-slate-800/70">
+                <a href="{% url 'ai_coach_home' %}" class="block w-full text-left text-xs font-semibold rounded-lg border border-slate-800 bg-slate-900/70 hover:bg-slate-800/80 px-3 py-2 text-slate-200">Open AI Coach</a>
+                <button data-ai-action="quick_help" class="w-full text-left text-xs font-semibold rounded-lg border border-slate-800 bg-slate-900/70 hover:bg-slate-800/80 px-3 py-2 text-slate-200">Quick Help</button>
+                <button data-ai-action="instant_recommendations" class="w-full text-left text-xs font-semibold rounded-lg border border-slate-800 bg-slate-900/70 hover:bg-slate-800/80 px-3 py-2 text-slate-200">Instant Recommendations</button>
+                <button data-ai-action="resource_search" class="w-full text-left text-xs font-semibold rounded-lg border border-slate-800 bg-slate-900/70 hover:bg-slate-800/80 px-3 py-2 text-slate-200">Resource Search</button>
+            </div>
+
+            <div class="p-3 space-y-2">
+                <div id="ai-assistant-log" class="max-h-44 overflow-y-auto text-xs text-slate-300 space-y-2 pr-1"></div>
+                <input id="ai-assistant-input" type="text" placeholder="Ask a quick question..." class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500/70" />
+                <button id="ai-assistant-send" class="w-full text-xs font-bold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2">Send to AI Coach</button>
+            </div>
+        </div>
+
+        <button id="ai-assistant-toggle" class="w-14 h-14 rounded-full bg-gradient-to-r from-indigo-600 to-sky-500 hover:from-indigo-500 hover:to-sky-400 shadow-2xl flex items-center justify-center text-white font-black text-xl border border-indigo-300/20">
+            AI
+        </button>
+    </div>
+    {% endif %}
+
+    <script>
+        setTimeout(() => {
+            const container = document.getElementById('toast-container');
+            if (container) {
+                const toasts = container.children;
+                for (let toast of toasts) {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }
+        }, 4000);
+
+        (function () {
+            const themeToggle = document.getElementById('theme-toggle-btn');
+            if (themeToggle) {
+                const savedTheme = localStorage.getItem('mindsync-theme');
+                if (savedTheme === 'light') {
+                    document.body.classList.add('light-theme');
+                }
+                themeToggle.addEventListener('click', () => {
+                    document.body.classList.toggle('light-theme');
+                    const nextTheme = document.body.classList.contains('light-theme') ? 'light' : 'dark';
+                    localStorage.setItem('mindsync-theme', nextTheme);
+                });
+            }
+
+            const toggle = document.getElementById('ai-assistant-toggle');
+            const panel = document.getElementById('ai-assistant-panel');
+            const closeBtn = document.getElementById('ai-assistant-close');
+            const sendBtn = document.getElementById('ai-assistant-send');
+            const input = document.getElementById('ai-assistant-input');
+            const log = document.getElementById('ai-assistant-log');
+            const actionButtons = document.querySelectorAll('[data-ai-action]');
+
+            if (!toggle || !panel) return;
+
+            function appendLine(text, tone) {
+                if (!log) return;
+                const item = document.createElement('div');
+                const palette = tone === 'user'
+                    ? 'bg-indigo-600/20 border-indigo-500/30 text-indigo-100'
+                    : 'bg-slate-900/80 border-slate-700/70 text-slate-200';
+                item.className = 'rounded-lg border px-2.5 py-2 ' + palette;
+                item.textContent = text;
+                log.appendChild(item);
+                log.scrollTop = log.scrollHeight;
+            }
+
+            async function sendToCoach(mode, message) {
+                const csrfEl = document.querySelector('input[name=csrfmiddlewaretoken]');
+                const headers = {'Content-Type': 'application/json'};
+                if (csrfEl) headers['X-CSRFToken'] = csrfEl.value;
+
+                const response = await fetch('{% url "ai_coach_chat" %}', {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({ mode, message }),
+                });
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || 'Assistant unavailable');
+                }
+                return data;
+            }
+
+            toggle.addEventListener('click', () => panel.classList.toggle('hidden'));
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => panel.classList.add('hidden'));
+            }
+
+            if (sendBtn && input) {
+                sendBtn.addEventListener('click', async () => {
+                    const question = (input.value || '').trim();
+                    if (!question) return;
+                    appendLine('You: ' + question, 'user');
+                    input.value = '';
+                    try {
+                        const data = await sendToCoach('quick_help', question);
+                        appendLine(data.reply || 'No reply generated.', 'ai');
+                    } catch (err) {
+                        appendLine('Assistant is temporarily unavailable. Try again shortly.', 'ai');
+                    }
+                });
+            }
+
+            actionButtons.forEach((button) => {
+                button.addEventListener('click', async () => {
+                    const mode = button.getAttribute('data-ai-action') || 'quick_help';
+                    let prompt = '';
+                    if (mode === 'quick_help') prompt = 'Give me quick help based on my current profile.';
+                    if (mode === 'instant_recommendations') prompt = 'Give me instant personalized recommendations now.';
+                    if (mode === 'resource_search') prompt = 'Suggest focused resource search strategies for my current academic risk areas.';
+
+                    appendLine('Action: ' + mode.replace('_', ' '), 'user');
+                    try {
+                        const data = await sendToCoach(mode, prompt);
+                        appendLine(data.reply || 'No reply generated.', 'ai');
+                    } catch (err) {
+                        appendLine('Action failed. Please retry.', 'ai');
+                    }
+                });
+            });
+        })();
+    </script>
+</body>
+</html>

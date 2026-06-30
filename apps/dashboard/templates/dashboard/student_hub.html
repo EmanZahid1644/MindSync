@@ -1,0 +1,788 @@
+{% extends 'authentication/base.html' %}
+
+{% block content %}
+<div class="max-w-7xl w-full mx-auto p-4 md:p-6 lg:p-8 space-y-6">
+
+    <!-- Top Identity Branding Banner Panel -->
+    <div class="relative overflow-hidden bg-gradient-to-br from-slate-900/60 to-slate-950/60 border border-slate-800/60 p-6 rounded-2xl backdrop-blur-xl shadow-2xl transition-all hover:border-slate-700/60">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-600/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+        <div class="relative flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-black text-white tracking-tight flex items-center gap-3">
+                    MindSync 
+                    <span class="bg-gradient-to-r from-indigo-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient-x">
+                        Intelligence Hub
+                    </span>
+                </h1>
+                <p class="text-xs text-slate-400/80 mt-1.5 flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Enterprise Analytics Layer Connected 
+                    <span class="text-indigo-400 font-mono font-bold bg-indigo-950/40 px-2.5 py-0.5 rounded-lg border border-indigo-800/30">
+                        @{{ user.username }}
+                    </span>
+                </p>
+            </div>
+            <a href="{% url 'logout' %}" class="group text-xs bg-rose-950/30 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-900/40 hover:border-rose-500 px-5 py-2.5 rounded-xl font-semibold tracking-wide transition-all duration-300 shadow-lg hover:shadow-rose-900/20 flex items-center gap-2 active:scale-95">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                Terminate Session
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Apps Navigation Matrix Bar -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <a href="{% url 'platform_home' %}" class="group bg-gradient-to-br from-indigo-600 to-indigo-700 border border-indigo-500/50 p-4 rounded-xl flex items-center gap-3 transition-all duration-300 shadow-lg hover:shadow-indigo-600/30 hover:scale-[1.02] active:scale-95">
+            <div class="p-2.5 bg-indigo-700/60 rounded-lg text-white backdrop-blur-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"></path></svg>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-white uppercase tracking-wider">Telemetry Center</p>
+                <p class="text-[11px] text-indigo-200/80">Main Metrics Logging</p>
+            </div>
+        </a>
+
+        <a href="{% url 'notes_generator_home' %}" class="group bg-slate-900/60 border border-slate-800/60 hover:border-indigo-500/60 hover:bg-slate-900/80 p-4 rounded-xl flex items-center gap-3 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-950/10">
+            <div class="p-2.5 bg-slate-950 rounded-lg text-indigo-400 group-hover:text-indigo-300 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-slate-300 uppercase tracking-wider group-hover:text-white transition-colors">AI Study Studio</p>
+                <p class="text-[11px] text-slate-500 group-hover:text-slate-400 transition-colors">Notes & Flashcards Engine</p>
+            </div>
+        </a>
+
+        <a href="{% url 'planner_hub_home' %}" class="group bg-slate-900/60 border border-slate-800/60 hover:border-indigo-500/60 hover:bg-slate-900/80 p-4 rounded-xl flex items-center gap-3 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-950/10">
+            <div class="p-2.5 bg-slate-950 rounded-lg text-amber-400 group-hover:text-amber-300 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-slate-300 uppercase tracking-wider group-hover:text-white transition-colors">Planner & Resources</p>
+                <p class="text-[11px] text-slate-500 group-hover:text-slate-400 transition-colors">Smart Schedule & Search</p>
+            </div>
+        </a>
+
+        <a href="{% url 'ai_coach_home' %}" class="group bg-slate-900/60 border border-slate-800/60 hover:border-sky-500/60 hover:bg-slate-900/80 p-4 rounded-xl flex items-center gap-3 transition-all duration-300 hover:shadow-lg hover:shadow-sky-950/10">
+            <div class="p-2.5 bg-slate-950 rounded-lg text-sky-400 group-hover:text-sky-300 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M4 13a8 8 0 1116 0v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3z"></path></svg>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-slate-300 uppercase tracking-wider group-hover:text-white transition-colors">AI Coach</p>
+                <p class="text-[11px] text-slate-500 group-hover:text-slate-400 transition-colors">Guidance & Recommendations</p>
+            </div>
+        </a>
+    </div>
+
+    <!-- MAIN AI OUTPUT METRICS LAYER -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Productivity Score -->
+        <div class="group bg-gradient-to-br from-slate-900/90 to-slate-950/90 border border-slate-800/60 p-5 rounded-2xl backdrop-blur-sm shadow-xl hover:shadow-2xl hover:border-indigo-800/40 transition-all duration-300 flex flex-col justify-between">
+            <div>
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                    <span class="w-1 h-4 bg-indigo-500 rounded-full"></span>
+                    Productivity Level Index
+                </p>
+                <div class="flex items-baseline gap-2 mt-2">
+                    <span class="text-4xl font-black text-indigo-400 font-mono group-hover:text-indigo-300 transition-colors">{{ ai.productivity_score }}</span>
+                    <span class="text-xs text-slate-500 font-bold">/ 100 PTS</span>
+                </div>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-3 border-t border-slate-800/60 pt-2 font-medium flex items-center gap-1.5">
+                <span class="w-1 h-1 rounded-full bg-indigo-500/50"></span>
+                Derived dynamically from active study hours allocation.
+            </p>
+        </div>
+
+        <!-- Deadline Calendar Heatmap -->
+        <div class="lg:col-span-2 bg-gradient-to-br from-slate-900/90 to-slate-950/90 border border-slate-800/60 p-5 rounded-2xl backdrop-blur-sm shadow-xl hover:shadow-2xl hover:border-slate-700/60 transition-all duration-300">
+            <div class="flex justify-between items-center mb-3">
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                    <span class="w-1 h-4 bg-sky-500 rounded-full"></span>
+                    Visual Deadline Calendar
+                </p>
+                <div class="flex gap-2 text-[9px] font-bold tracking-tight uppercase">
+                    <span class="flex items-center gap-1.5 px-1.5 py-0.5 rounded bg-slate-950/50"><span class="w-1.5 h-1.5 rounded-sm bg-emerald-500 block"></span>Safe</span>
+                    <span class="flex items-center gap-1.5 px-1.5 py-0.5 rounded bg-slate-950/50"><span class="w-1.5 h-1.5 rounded-sm bg-indigo-500 block"></span>Upc</span>
+                    <span class="flex items-center gap-1.5 px-1.5 py-0.5 rounded bg-slate-950/50"><span class="w-1.5 h-1.5 rounded-sm bg-amber-500 block"></span>Urg</span>
+                    <span class="flex items-center gap-1.5 px-1.5 py-0.5 rounded bg-slate-950/50"><span class="w-1.5 h-1.5 rounded-sm bg-rose-500 block"></span>Ovd</span>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-7 gap-1.5 bg-slate-950/60 p-3 rounded-xl border border-slate-800/40">
+                {% for i in "1234567890123456789012345678901" %}
+                    <div id="day-cell-{{ forloop.counter }}" 
+                         class="aspect-square rounded-md bg-slate-900 border border-slate-800/40 flex items-center justify-center text-[10px] font-mono font-bold text-slate-600 transition-all duration-200 hover:scale-110 hover:z-10 relative group cursor-pointer">
+                        {{ forloop.counter }}
+                        
+                        <div class="absolute bottom-full mb-2 hidden group-hover:block z-30 w-44 bg-slate-950 border border-slate-700/60 text-slate-300 text-[10px] p-2.5 rounded-lg shadow-2xl pointer-events-none font-sans backdrop-blur-sm">
+                            <span class="block text-[8px] font-black uppercase text-slate-500 tracking-wider">Day {{ forloop.counter }} Metrics</span>
+                            <span class="tip-content font-medium block mt-0.5 text-slate-400">Optimal workflow zone tracking</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Burnout Threat Matrix -->
+        <div class="group bg-gradient-to-br from-slate-900/90 to-slate-950/90 border border-slate-800/60 p-5 rounded-2xl backdrop-blur-sm shadow-xl hover:shadow-2xl hover:border-rose-800/40 transition-all duration-300 flex flex-col justify-between">
+            <div>
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                    <span class="w-1 h-4 bg-rose-500 rounded-full"></span>
+                    Burnout Threat Matrix
+                </p>
+                <div class="flex items-baseline gap-2 mt-2 flex-wrap">
+                    <span class="text-4xl font-black text-rose-400 font-mono group-hover:text-rose-300 transition-colors">{{ ai.burnout_percentage }}%</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg {% if ai.risk_level == 'HIGH RISK' %} bg-rose-950/60 text-rose-400 border border-rose-900/40 {% else %} bg-emerald-950/60 text-emerald-400 border border-emerald-900/40 {% endif %}">
+                        {{ ai.risk_level }}
+                    </span>
+                </div>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-3 border-t border-slate-800/60 pt-2 font-medium flex items-center gap-1.5">
+                <span class="w-1 h-1 rounded-full bg-rose-500/50"></span>
+                Real-time composite calculations index score.
+            </p>
+        </div>
+    </div>
+
+    <!-- CENTRAL REGION FRAMEWORK: DATA INTAKE VS EVALUATION -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left Column: Ingestion Form Area -->
+        <div class="lg:col-span-5 bg-gradient-to-br from-slate-900/90 to-slate-950/90 border border-slate-800/60 rounded-2xl p-6 shadow-2xl backdrop-blur-sm transition-all hover:border-slate-700/60">
+            <form method="POST" action="{% url 'log_telemetry' %}" class="space-y-5">
+                {% csrf_token %}
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800/60 pb-3 mb-3 flex items-center gap-2.5">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                    </span>
+                    Student Telemetry Data Intake
+                </h3>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">GPA Spectrum</label>
+                        <input type="number" step="0.01" min="0" max="4" name="gpa" value="{{ log.gpa }}" class="w-full bg-slate-950/80 border border-slate-800/60 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-300 font-medium font-mono hover:border-slate-700/80">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Qualitative Mood</label>
+                        <select name="mood" class="w-full bg-slate-950/80 border border-slate-800/60 rounded-xl px-3.5 py-2.5 text-sm text-slate-300 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-300 font-medium hover:border-slate-700/80 appearance-none cursor-pointer">
+                            <option value="neutral" {% if log.mood == 'neutral' %}selected{% endif %}>Neutral</option>
+                            <option value="excellent" {% if log.mood == 'excellent' %}selected{% endif %}>Excellent</option>
+                            <option value="good" {% if log.mood == 'good' %}selected{% endif %}>Good</option>
+                            <option value="anxious" {% if log.mood == 'anxious' %}selected{% endif %}>Anxious</option>
+                            <option value="exhausted" {% if log.mood == 'exhausted' %}selected{% endif %}>Exhausted</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Stress Intensity Level</label>
+                        <span id="stress-lbl" class="text-xs font-mono font-bold text-indigo-400 bg-indigo-950/40 px-3 py-0.5 rounded-lg border border-indigo-800/30 min-w-[2rem] text-center">{{ log.stress_level }}</span>
+                    </div>
+                    <input type="range" name="stress_level" min="1" max="10" value="{{ log.stress_level }}" id="stress-range" class="w-full accent-indigo-500 bg-slate-950/60 h-2 rounded-lg border border-slate-800/60 cursor-pointer transition-all hover:border-indigo-500/50">
+                    <div class="flex justify-between text-[9px] text-slate-500 font-bold px-1 mt-0.5">
+                        <span>Low</span>
+                        <span>High</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Study Hours</label>
+                        <input type="number" step="0.5" name="study_hours" value="{{ log.study_hours }}" class="w-full bg-slate-950/80 border border-slate-800/60 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-300 font-medium font-mono hover:border-slate-700/80">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Sleep Hours</label>
+                        <input type="number" step="0.5" name="sleep_hours" value="{{ log.sleep_hours }}" class="w-full bg-slate-950/80 border border-slate-800/60 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-300 font-medium font-mono hover:border-slate-700/80">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3 pt-3 border-t border-slate-800/60">
+                    <div class="bg-slate-950/40 rounded-xl p-2.5 text-center border border-slate-800/40">
+                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-1 tracking-wider">Completed</label>
+                        <input type="number" name="completed_assignments" value="{{ log.completed_assignments }}" class="w-full bg-slate-950 border border-slate-800/60 rounded-lg p-2 font-mono text-center text-sm text-emerald-400 font-bold focus:outline-none focus:border-emerald-500/50 transition-all">
+                    </div>
+                    <div class="bg-slate-950/40 rounded-xl p-2.5 text-center border border-slate-800/40">
+                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-1 tracking-wider">Pending</label>
+                        <input type="number" name="pending_assignments" value="{{ log.pending_assignments }}" class="w-full bg-slate-950 border border-slate-800/60 rounded-lg p-2 font-mono text-center text-sm text-indigo-400 font-bold focus:outline-none focus:border-indigo-500/50 transition-all">
+                    </div>
+                    <div class="bg-slate-950/40 rounded-xl p-2.5 text-center border border-slate-800/40">
+                        <label class="block text-[9px] font-bold uppercase text-slate-500 mb-1 tracking-wider">Missed</label>
+                        <input type="number" name="missed_assignments" value="{{ log.missed_assignments }}" class="w-full bg-slate-950 border border-slate-800/60 rounded-lg p-2 font-mono text-center text-sm text-rose-400 font-bold focus:outline-none focus:border-rose-500/50 transition-all">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 text-white font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-indigo-950/30 hover:shadow-indigo-950/50 transform transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-2.5 mt-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    Commit Metrics Engine Update
+                </button>
+            </form>
+        </div>
+
+        <!-- Right Column: AI Analytics Output Window -->
+        <div class="lg:col-span-7 bg-gradient-to-br from-slate-900/90 to-slate-950/90 border border-slate-800/60 rounded-2xl p-6 shadow-2xl backdrop-blur-sm transition-all hover:border-slate-700/60 flex flex-col justify-between">
+            <div class="space-y-5 w-full">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800/60 pb-3 flex items-center gap-2.5">
+                    <span class="w-1 h-4 bg-sky-500 rounded-full"></span>
+                    AI Processing Log Analysis Output
+                </h3>
+                
+                <div class="bg-gradient-to-br from-slate-950/80 to-slate-950/60 border border-slate-800/50 p-4 rounded-xl shadow-inner transition-all hover:border-indigo-800/30">
+                    <h4 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                        <span>🧠</span> Burnout Prediction Rationale
+                    </h4>
+                    <p class="text-xs font-semibold text-slate-300 leading-relaxed">{{ ai.explanation }}</p>
+                </div>
+
+                <div class="space-y-2.5">
+                    <h4 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                        <span>💡</span> Personalized Recommendations Matrix
+                    </h4>
+                    {% for rec in ai.recommendations %}
+                        <div class="group bg-indigo-950/20 border-l-4 border-indigo-500/60 border border-indigo-900/30 px-4 py-3.5 rounded-xl flex items-start gap-3.5 text-xs text-indigo-300 font-medium shadow-sm hover:bg-indigo-950/30 transition-all duration-300 animate-fadeIn">
+                            <span class="w-2 h-2 rounded-full bg-indigo-400 block shrink-0 mt-1.5 group-hover:scale-125 transition-transform"></span>
+                            <p class="leading-relaxed">{{ rec }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-4 gap-3 pt-4 border-t border-slate-800/60 mt-5">
+                <div class="bg-slate-950/60 p-3 rounded-xl text-center border border-slate-800/50 transition-all hover:border-emerald-800/40 hover:bg-slate-950/80">
+                    <span class="block text-[10px] font-bold text-slate-500 font-mono tracking-wider">DONE</span>
+                    <span class="text-lg font-black text-emerald-400 mt-0.5 block">{{ log.completed_assignments }}</span>
+                </div>
+                <div class="bg-slate-950/60 p-3 rounded-xl text-center border border-slate-800/50 transition-all hover:border-indigo-800/40 hover:bg-slate-950/80">
+                    <span class="block text-[10px] font-bold text-slate-500 font-mono tracking-wider">UPC</span>
+                    <span class="text-lg font-black text-indigo-400 mt-0.5 block">{{ log.pending_assignments }}</span>
+                </div>
+                <div class="bg-slate-950/60 p-3 rounded-xl text-center border border-slate-800/50 transition-all hover:border-amber-800/40 hover:bg-slate-950/80">
+                    <span class="block text-[10px] font-bold text-slate-500 font-mono tracking-wider">URG</span>
+                    <span class="text-lg font-black text-amber-400 mt-0.5 block">1</span>
+                </div>
+                <div class="bg-slate-950/60 p-3 rounded-xl text-center border border-slate-800/50 transition-all hover:border-rose-800/40 hover:bg-slate-950/80">
+                    <span class="block text-[10px] font-bold text-slate-500 font-mono tracking-wider">OVD</span>
+                    <span class="text-lg font-black text-rose-400 mt-0.5 block">{{ log.missed_assignments }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOWER TIMELINE REGION: PLANNER SYSTEM INTAKE -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Add Study Session Block Panel -->
+        <div class="lg:col-span-4 bg-gradient-to-br from-slate-900/90 to-slate-950/90 border border-slate-800/60 rounded-2xl p-6 shadow-xl backdrop-blur-sm transition-all hover:border-slate-700/60 flex flex-col justify-between">
+            <form method="POST" action="{% url 'create_task' %}" class="space-y-4 w-full">
+                {% csrf_token %}
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800/60 pb-3 flex items-center gap-2.5">
+                    <span class="w-1 h-4 bg-amber-500 rounded-full"></span>
+                    Log Planned Study Session
+                </h3>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Subject Matter Topic</label>
+                    <input type="text" name="subject" placeholder="e.g., Compiler Construction" required class="w-full bg-slate-950/80 border border-slate-800/60 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-600/70 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-300 font-medium hover:border-slate-700/80">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Target Date</label>
+                        <input type="date" name="date" required class="w-full bg-slate-950/80 border border-slate-800/60 rounded-xl px-3 py-2.5 text-sm text-slate-300 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-300 hover:border-slate-700/80">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Time Marker</label>
+                        <input type="time" name="time" required class="w-full bg-slate-950/80 border border-slate-800/60 rounded-xl px-3 py-2.5 text-sm text-slate-300 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-300 hover:border-slate-700/80">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Duration Block (Hours)</label>
+                    <input type="number" step="0.5" name="duration" value="1.5" required class="w-full bg-slate-950/80 border border-slate-800/60 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-300 font-mono font-bold hover:border-slate-700/80">
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-slate-800 to-slate-700 hover:from-slate-700 hover:to-slate-600 border border-slate-700/50 text-slate-300 hover:text-white text-xs font-bold uppercase tracking-wider py-3 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg active:scale-[0.97] flex items-center justify-center gap-2 mt-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Sync Schedule Grid Block
+                </button>
+            </form>
+        </div>
+
+        <!-- AI Smart Optimized Schedule Grid Viewer Output -->
+        <div class="lg:col-span-8 bg-gradient-to-br from-slate-900/90 to-slate-950/90 border border-slate-800/60 rounded-2xl p-6 shadow-xl backdrop-blur-sm transition-all hover:border-slate-700/60 flex flex-col justify-between">
+            <div class="w-full">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800/60 pb-3 mb-4 flex items-center gap-2.5">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                    </span>
+                    AI Optimized Study Schedule Monitor
+                </h3>
+
+                {% if sessions %}
+                    <div class="space-y-2.5 max-h-[280px] overflow-y-auto pr-2 custom-scrollbar">
+                        {% for session in sessions %}
+                            <div class="group bg-slate-950/60 border border-slate-800/50 hover:border-indigo-800/40 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all duration-300 hover:bg-slate-950/80 hover:shadow-lg hover:shadow-indigo-950/10">
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="text-sm font-bold text-slate-200 font-mono tracking-tight group-hover:text-white transition-colors">{{ session.subject }}</h4>
+                                    <p class="text-[10px] text-slate-500 font-medium mt-0.5 flex items-center gap-2 flex-wrap">
+                                        <span class="flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                            {{ session.date }}
+                                        </span>
+                                        <span class="w-1 h-1 rounded-full bg-slate-700"></span>
+                                        <span class="text-indigo-400/80">{{ session.time }}</span>
+                                    </p>
+                                </div>
+                                <span class="text-xs bg-amber-950/40 text-amber-400 border border-amber-900/40 px-3.5 py-1.5 rounded-xl font-bold font-mono shadow-inner whitespace-nowrap flex items-center gap-1.5">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    {{ session.duration_hours }} Hours
+                                </span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="border-2 border-dashed border-slate-800/50 p-16 text-center text-slate-500 rounded-xl text-xs font-semibold bg-slate-950/30 transition-all hover:border-slate-700/50">
+                        <div class="text-5xl mb-3">📋</div>
+                        <p class="font-bold text-slate-400">No schedule tracks synced</p>
+                        <p class="text-[11px] text-slate-500 mt-1">Add study blocks via the ingestion panel</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- REAL-TIME GAMIFIED ACHIEVEMENT & BADGES REGION LAYOUT MATRIX -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6 animate-fadeIn">
+        <!-- Gamified Experience points & Streak Board Pane -->
+        <div class="lg:col-span-4 bg-gradient-to-br from-slate-900/90 to-slate-950/90 border border-slate-800/60 p-6 rounded-2xl shadow-xl backdrop-blur-sm transition-all hover:border-slate-700/60 flex flex-col justify-between">
+            <div>
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800/60 pb-3 mb-4 flex items-center gap-2.5">
+                    <span>⚡</span>
+                    Character Progression Status
+                </h3>
+                
+                <div class="space-y-4">
+                    <div class="bg-gradient-to-br from-slate-950/80 to-slate-950/60 p-4 rounded-xl border border-slate-800/50 flex items-center justify-between transition-all hover:border-amber-800/40">
+                        <div>
+                            <span class="block text-[10px] font-bold uppercase text-slate-500 tracking-wide">Daily Study Streak</span>
+                            <span class="text-2xl font-black text-amber-400 font-mono flex items-center gap-1.5 mt-0.5">
+                                🔥 {{ gamification.streak }} Days
+                            </span>
+                        </div>
+                        <span class="text-[10px] bg-amber-950/40 text-amber-400 border border-amber-900/40 px-3 py-1.5 rounded-lg font-black tracking-widest animate-pulse">
+                            STREAK ACTIVE
+                        </span>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-slate-950/80 to-slate-950/60 p-4 rounded-xl border border-slate-800/50 space-y-2.5">
+                        <div class="flex justify-between text-xs font-bold font-mono">
+                            <span class="text-slate-400 uppercase tracking-wide">Accumulated Experience</span>
+                            <span class="text-indigo-400">{{ gamification.xp }} XP</span>
+                        </div>
+                        <div class="w-full bg-slate-900 rounded-full h-2.5 border border-slate-800/60 overflow-hidden">
+                            <div class="bg-gradient-to-r from-indigo-500 via-sky-500 to-indigo-500 h-2.5 rounded-full transition-all duration-1000 bg-[length:200%_auto] animate-gradient-x" style="width: {% if gamification.xp > 100 %}100%{% else %}{{ gamification.xp }}%{% endif %}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-8 bg-gradient-to-br from-slate-900/90 to-slate-950/90 border border-slate-800/60 p-6 rounded-2xl shadow-xl backdrop-blur-sm transition-all hover:border-slate-700/60">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800/60 pb-3 mb-4 flex items-center gap-2.5">
+                <span>🎖️</span>
+                Unlocked Achievement Badges Matrix
+                <span class="ml-auto text-[10px] bg-slate-800/60 px-2.5 py-0.5 rounded-full text-slate-400">{{ gamification.badges|length }}</span>
+            </h3>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[240px] overflow-y-auto pr-1 custom-scrollbar">
+                {% for badge in gamification.badges %}
+                    <div class="group bg-slate-950/60 border border-slate-800/50 hover:border-indigo-800/40 p-4 rounded-xl flex items-center gap-4 transition-all duration-300 hover:bg-slate-950/80 hover:shadow-lg hover:shadow-indigo-950/10">
+                        <div class="text-3xl bg-slate-900 p-3 rounded-xl border border-slate-800/60 shadow-inner shrink-0 group-hover:scale-110 transition-transform duration-300">
+                            {{ badge.icon }}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-sm font-black text-slate-200 font-mono tracking-tight group-hover:text-white transition-colors">{{ badge.title }}</h4>
+                            <p class="text-[11px] text-slate-400 leading-relaxed mt-0.5 font-medium line-clamp-1">{{ badge.desc }}</p>
+                            <span class="text-[9px] font-black uppercase text-indigo-400 font-mono tracking-widest mt-1.5 block">+100 XP</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div id="quiz-results-panel" class="bg-gradient-to-br from-slate-900/90 to-slate-950/90 border border-slate-800/60 rounded-2xl p-6 shadow-xl backdrop-blur-sm transition-all hover:border-slate-700/60 animate-fadeIn">
+        <div class="flex items-center justify-between gap-4 border-b border-slate-800/60 pb-3 mb-4">
+            <div>
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2.5">
+                    <span>🧪</span>
+                    AI Quiz Results Overview
+                </h3>
+                <p class="text-[11px] text-slate-500 mt-1">Recent quiz attempts, scores, and accuracy synced from the AI Quiz Generator.</p>
+            </div>
+            <div class="flex flex-wrap items-center justify-end gap-2 text-[10px] font-black uppercase tracking-widest text-slate-300">
+                <span class="px-3 py-1.5 rounded-lg bg-slate-950/60 border border-slate-800/60">Attempts {{ quiz_summary.attempts }}</span>
+                <span class="px-3 py-1.5 rounded-lg bg-slate-950/60 border border-slate-800/60">Best {{ quiz_summary.best_score }}</span>
+                <span class="px-3 py-1.5 rounded-lg bg-slate-950/60 border border-slate-800/60">Avg {{ quiz_summary.avg_accuracy }}%</span>
+                <a href="{% url 'notes_generator_home' %}?open_latest=1" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-950/50 hover:bg-indigo-600 text-indigo-400 hover:text-white border border-indigo-900/40 hover:border-indigo-500 transition-all duration-300">
+                    Generate Quiz
+                </a>
+            </div>
+        </div>
+
+        {% if quiz_history %}
+            <div class="space-y-3 max-h-[320px] overflow-y-auto pr-2 custom-scrollbar">
+                {% for attempt in quiz_history %}
+                    <div class="group bg-slate-950/60 border border-slate-800/50 hover:border-indigo-800/40 p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3 transition-all duration-300 hover:bg-slate-950/80 hover:shadow-lg hover:shadow-indigo-950/10">
+                        <div class="min-w-0">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <h4 class="text-sm font-bold text-slate-200 group-hover:text-white transition-colors truncate">{{ attempt.material.title }}</h4>
+                                <span class="text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-lg bg-indigo-950/40 text-indigo-400 border border-indigo-900/40">{{ attempt.quiz_mode }}</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-1">
+                                {{ attempt.completed_at }} · {{ attempt.correct_answers }}/{{ attempt.total_questions }} correct
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs font-black font-mono whitespace-nowrap">
+                            <span class="px-3 py-1.5 rounded-lg bg-emerald-950/40 text-emerald-400 border border-emerald-900/40">Score {{ attempt.score }}</span>
+                            <span class="px-3 py-1.5 rounded-lg bg-sky-950/40 text-sky-400 border border-sky-900/40">Acc {{ attempt.accuracy }}%</span>
+                            <span class="px-3 py-1.5 rounded-lg bg-amber-950/40 text-amber-400 border border-amber-900/40">XP {{ attempt.achievement_payload.xp_awarded|default:attempt.score }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="border-2 border-dashed border-slate-800/50 p-10 text-center text-slate-500 rounded-xl text-xs font-semibold bg-slate-950/30 transition-all hover:border-slate-700/50">
+                <div class="text-4xl mb-3">🧠</div>
+                <p class="font-bold text-slate-400">No quiz attempts yet</p>
+                <p class="text-[11px] text-slate-500 mt-1">Generate a quiz from AI Study Studio and submit it to see results here.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div id="cgpa-prediction-panel" class="bg-gradient-to-br from-slate-900/90 to-slate-950/90 border border-slate-800/60 rounded-2xl p-6 shadow-xl backdrop-blur-sm transition-all hover:border-slate-700/60 animate-fadeIn">
+            <div class="flex items-center justify-between gap-3 border-b border-slate-800/60 pb-3 mb-4">
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2.5">
+                        <span>📈</span>
+                        CGPA Prediction Engine
+                    </h3>
+                    <p class="text-[11px] text-slate-500 mt-1">Uses previous GPA, credit hours, assignments, quiz results, study hours, and focus level.</p>
+                </div>
+                <span class="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg bg-indigo-950/40 text-indigo-400 border border-indigo-900/40">History saved</span>
+            </div>
+
+            <form method="POST" action="{% url 'predict_cgpa' %}" class="space-y-4">
+                {% csrf_token %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Previous GPA</label>
+                        <input type="number" step="0.01" min="0" max="4" name="previous_gpa" value="{{ log.gpa }}" class="w-full bg-slate-950/80 border border-slate-800/60 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500/70">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Credit Hours</label>
+                        <input type="number" step="0.5" min="0" max="30" name="credit_hours" value="15" class="w-full bg-slate-950/80 border border-slate-800/60 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500/70">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Assignment Completion %</label>
+                        <input type="number" step="1" min="0" max="100" name="assignment_completion" value="{{ default_assignment_completion }}" class="w-full bg-slate-950/80 border border-slate-800/60 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500/70">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Quiz Results %</label>
+                        <input type="number" step="0.01" min="0" max="100" name="quiz_results" value="{{ quiz_summary.avg_accuracy|default:0 }}" class="w-full bg-slate-950/80 border border-slate-800/60 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500/70">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Study Hours</label>
+                        <input type="number" step="0.5" min="0" max="24" name="study_hours" value="{{ log.study_hours }}" class="w-full bg-slate-950/80 border border-slate-800/60 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500/70">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Focus Level</label>
+                        <input type="number" step="1" min="1" max="10" name="focus_level" value="{{ default_focus_level }}" class="w-full bg-slate-950/80 border border-slate-800/60 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500/70">
+                    </div>
+                </div>
+                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 text-white font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-indigo-950/30">
+                    Predict GPA
+                </button>
+            </form>
+
+            <div class="mt-5 space-y-3">
+                {% if latest_prediction %}
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="bg-slate-950/60 border border-slate-800/50 rounded-xl p-4">
+                            <span class="block text-[10px] font-bold uppercase text-slate-500 tracking-wider">Predicted GPA</span>
+                            <span class="text-2xl font-black text-indigo-400 font-mono">{{ latest_prediction.predicted_gpa }}</span>
+                        </div>
+                        <div class="bg-slate-950/60 border border-slate-800/50 rounded-xl p-4">
+                            <span class="block text-[10px] font-bold uppercase text-slate-500 tracking-wider">Credit Hours</span>
+                            <span class="text-2xl font-black text-amber-400 font-mono">{{ latest_prediction.credit_hours }}</span>
+                        </div>
+                        <div class="bg-slate-950/60 border border-slate-800/50 rounded-xl p-4">
+                            <span class="block text-[10px] font-bold uppercase text-slate-500 tracking-wider">Focus Level</span>
+                            <span class="text-2xl font-black text-emerald-400 font-mono">{{ latest_prediction.focus_level }}</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="bg-slate-950/60 border border-slate-800/50 rounded-xl p-4">
+                            <span class="block text-[10px] font-bold uppercase text-slate-500 tracking-wider">Attendance Proxy</span>
+                            <span class="text-lg font-black text-sky-400 font-mono">{{ latest_prediction.semester_forecast.attendance_proxy }}%</span>
+                        </div>
+                        <div class="bg-slate-950/60 border border-slate-800/50 rounded-xl p-4">
+                            <span class="block text-[10px] font-bold uppercase text-slate-500 tracking-wider">Quiz Trend</span>
+                            <span class="text-lg font-black {% if latest_prediction.semester_forecast.quiz_trend >= 0 %}text-emerald-400{% else %}text-rose-400{% endif %} font-mono">{{ latest_prediction.semester_forecast.quiz_trend }}%</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950/60 border border-slate-800/50 rounded-xl p-4">
+                        <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3">Subject-wise Forecast</h4>
+                        <div class="space-y-2">
+                            {% for row in latest_prediction.subject_forecast %}
+                                <div class="flex items-center justify-between gap-3 text-xs text-slate-300">
+                                    <span class="font-semibold">{{ row.subject }}</span>
+                                    <span class="font-mono text-indigo-400">{{ row.projected_gpa }} GPA</span>
+                                    <span class="text-slate-500">{{ row.confidence }}%</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="border-2 border-dashed border-slate-800/50 rounded-xl p-6 text-center text-slate-500 text-xs font-semibold bg-slate-950/30">
+                        No prediction history yet.
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if prediction_history %}
+                <div class="mt-5 space-y-2 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
+                    {% for item in prediction_history %}
+                        <div class="flex items-center justify-between gap-3 bg-slate-950/50 border border-slate-800/50 rounded-xl px-4 py-3 text-xs">
+                            <div>
+                                <p class="font-bold text-slate-200">{{ item.created_at }}</p>
+                                <p class="text-slate-500">Prev {{ item.previous_gpa }} · Quiz {{ item.quiz_results }}%</p>
+                            </div>
+                            <span class="font-black font-mono text-indigo-400">{{ item.predicted_gpa }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div id="semester-simulator-panel" class="bg-gradient-to-br from-slate-900/90 to-slate-950/90 border border-slate-800/60 rounded-2xl p-6 shadow-xl backdrop-blur-sm transition-all hover:border-slate-700/60 animate-fadeIn">
+            <div class="flex items-center justify-between gap-3 border-b border-slate-800/60 pb-3 mb-4">
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2.5">
+                        <span>🎓</span>
+                        AI Semester Simulator
+                    </h3>
+                    <p class="text-[11px] text-slate-500 mt-1">Adjust study hours, attendance, assignment completion, and quiz performance.</p>
+                </div>
+                <span class="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg bg-emerald-950/40 text-emerald-400 border border-emerald-900/40">Live forecast</span>
+            </div>
+
+            <form method="POST" action="{% url 'simulate_semester' %}" class="space-y-4">
+                {% csrf_token %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Study Hours</label>
+                        <input type="number" step="0.5" min="0" max="24" name="sim_study_hours" value="{{ log.study_hours }}" class="w-full bg-slate-950/80 border border-slate-800/60 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500/70">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Attendance %</label>
+                        <input type="number" step="1" min="0" max="100" name="attendance" value="75" class="w-full bg-slate-950/80 border border-slate-800/60 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500/70">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Assignment Completion %</label>
+                        <input type="number" step="1" min="0" max="100" name="sim_assignment_completion" value="50" class="w-full bg-slate-950/80 border border-slate-800/60 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500/70">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Quiz Performance %</label>
+                        <input type="number" step="0.01" min="0" max="100" name="sim_quiz_performance" value="{{ quiz_summary.avg_accuracy|default:0 }}" class="w-full bg-slate-950/80 border border-slate-800/60 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500/70">
+                    </div>
+                </div>
+                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-emerald-950/30">
+                    Run Simulation
+                </button>
+            </form>
+
+            <div class="mt-5 space-y-3">
+                {% if latest_simulation %}
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="bg-slate-950/60 border border-slate-800/50 rounded-xl p-4">
+                            <span class="block text-[10px] font-bold uppercase text-slate-500 tracking-wider">Expected GPA</span>
+                            <span class="text-2xl font-black text-emerald-400 font-mono">{{ latest_simulation.expected_gpa }}</span>
+                        </div>
+                        <div class="bg-slate-950/60 border border-slate-800/50 rounded-xl p-4">
+                            <span class="block text-[10px] font-bold uppercase text-slate-500 tracking-wider">Attendance</span>
+                            <span class="text-2xl font-black text-sky-400 font-mono">{{ latest_simulation.attendance }}%</span>
+                        </div>
+                        <div class="bg-slate-950/60 border border-slate-800/50 rounded-xl p-4">
+                            <span class="block text-[10px] font-bold uppercase text-slate-500 tracking-wider">Performance</span>
+                            <span class="text-2xl font-black text-amber-400 font-mono">{{ latest_simulation.expected_performance }}</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950/60 border border-slate-800/50 rounded-xl p-4">
+                        <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3">Live Forecast Notes</h4>
+                        <div class="space-y-2 text-xs text-slate-300">
+                            {% for rec in latest_simulation.forecast_snapshot.recommendations %}
+                                <div class="flex items-start gap-2">
+                                    <span class="text-emerald-400 mt-0.5">•</span>
+                                    <p>{{ rec }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="border-2 border-dashed border-slate-800/50 rounded-xl p-6 text-center text-slate-500 text-xs font-semibold bg-slate-950/30">
+                        No semester simulation yet.
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if simulation_history %}
+                <div class="mt-5 space-y-2 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
+                    {% for item in simulation_history %}
+                        <div class="flex items-center justify-between gap-3 bg-slate-950/50 border border-slate-800/50 rounded-xl px-4 py-3 text-xs">
+                            <div>
+                                <p class="font-bold text-slate-200">{{ item.created_at }}</p>
+                                <p class="text-slate-500">Study {{ item.study_hours }}h · Attendance {{ item.attendance }}%</p>
+                            </div>
+                            <span class="font-black font-mono text-emerald-400">{{ item.expected_gpa }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<script type="application/json" id="heatmap-data">
+{{ heatmap_data|safe }}
+</script>
+
+<script>
+    function scrollToQuizResultsIfRequested() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('quiz_saved') !== '1') {
+            return;
+        }
+
+        const panel = document.getElementById('quiz-results-panel');
+        if (panel) {
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            panel.classList.add('ring-2', 'ring-indigo-500/50');
+            window.setTimeout(() => panel.classList.remove('ring-2', 'ring-indigo-500/50'), 2500);
+        }
+    }
+
+    function scrollToForecastPanelsIfRequested() {
+        const params = new URLSearchParams(window.location.search);
+        const targetId = params.get('prediction_saved') === '1' ? 'cgpa-prediction-panel' : params.get('simulation_saved') === '1' ? 'semester-simulator-panel' : '';
+
+        if (!targetId) {
+            return;
+        }
+
+        const panel = document.getElementById(targetId);
+        if (panel) {
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            panel.classList.add('ring-2', 'ring-emerald-500/50');
+            window.setTimeout(() => panel.classList.remove('ring-2', 'ring-emerald-500/50'), 2500);
+        }
+    }
+
+    // 1. Live Input Range Synchronization Listener
+    const rng = document.getElementById('stress-range');
+    const lbl = document.getElementById('stress-lbl');
+    if (rng && lbl) {
+        rng.addEventListener('input', function() { 
+            lbl.textContent = this.value; 
+        });
+    }
+
+    // 2. Heatmap Context Compilation Engine Execution
+    const heatmapDataSource = document.getElementById('heatmap-data');
+    if (heatmapDataSource) {
+        try {
+            const mapData = JSON.parse(heatmapDataSource.textContent);
+
+            mapData.forEach(item => {
+                const cell = document.getElementById(`day-cell-${item.day}`);
+                if (cell) {
+                    cell.classList.remove('bg-slate-900', 'text-slate-600', 'border-slate-800/40');
+                    const tooltip = cell.querySelector('.tip-content');
+                    
+                    if (item.status === 'safe') {
+                        cell.classList.add('bg-emerald-950/80', 'text-emerald-400', 'border-emerald-800/60', 'shadow-md', 'shadow-emerald-950/10');
+                        if(tooltip) tooltip.textContent = `🟢 [SAFE]: ${item.title}`;
+                    } else if (item.status === 'upcoming') {
+                        cell.classList.add('bg-indigo-950/80', 'text-indigo-400', 'border-indigo-800/60');
+                        if(tooltip) tooltip.textContent = `🔵 [UPCOMING]: ${item.title}`;
+                    } else if (item.status === 'urgent') {
+                        cell.classList.add('bg-amber-950/80', 'text-amber-400', 'border-amber-800/60');
+                        if(tooltip) tooltip.textContent = `🟡 [URGENT]: ${item.title}`;
+                    } else if (item.status === 'overdue') {
+                        cell.classList.add('bg-rose-950/80', 'text-rose-400', 'border-rose-800/60', 'animate-pulse');
+                        if(tooltip) tooltip.textContent = `🔴 [OVERDUE]: ${item.title}`;
+                    }
+                }
+            });
+        } catch(e) {
+            console.error("Heatmap context parse failure: ", e);
+        }
+    }
+
+    scrollToQuizResultsIfRequested();
+    scrollToForecastPanelsIfRequested();
+</script>
+
+<style>
+    @keyframes gradient-x {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+    .animate-gradient-x {
+        animation: gradient-x 3s ease infinite;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    /* Custom Scrollbar */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(30, 41, 59, 0.3);
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(99, 102, 241, 0.4);
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(99, 102, 241, 0.6);
+    }
+
+    .line-clamp-1 {
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+{% endblock %}

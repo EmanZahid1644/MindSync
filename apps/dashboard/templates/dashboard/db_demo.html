@@ -1,0 +1,383 @@
+{% extends 'authentication/base.html' %}
+
+{% block content %}
+<!-- Main Container setup jo poore page ki spacing handle karta hai -->
+<div class="max-w-7xl w-full mx-auto p-4 md:p-6 lg:p-8 space-y-6">
+
+    <!-- Header Panel: Isme database connection status aur active table name display hoga -->
+    <div class="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl backdrop-blur-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-xl animate-fadeIn">
+        <div>
+            <h1 class="text-3xl font-black text-white tracking-tight flex items-center gap-2">
+                🔬 Database <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">CRUD Demonstration Console</span>
+            </h1>
+            <p class="text-xs text-slate-400 mt-1">
+                PostgreSQL Core Connection: <span class="text-emerald-400 font-mono font-bold">ACTIVE</span> | Active Table Scope: <span class="text-indigo-400 font-mono font-bold">{{ active_table }}</span>
+            </p>
+        </div>
+        <a href="{% url 'platform_home' %}" class="text-xs bg-slate-950/60 text-slate-300 border border-slate-800 hover:border-slate-700 px-5 py-2.5 rounded-xl font-semibold tracking-wide transition-all shadow-md">
+            &larr; Back to Main Dashboard
+        </a>
+    </div>
+
+    <!-- Live Execution Status Bar: Success aur Error notifications dikhane ke liye -->
+    {% if success_msg %}
+        <div class="bg-emerald-950/60 border border-emerald-900 text-emerald-400 px-5 py-4 rounded-xl text-xs font-bold font-mono tracking-tight animate-pulse shadow-md">
+            {{ success_msg }}
+        </div>
+    {% endif %}
+    {% if error_msg %}
+        <div class="bg-rose-950/60 border border-rose-900 text-rose-400 px-5 py-4 rounded-xl text-xs font-bold font-mono tracking-tight shadow-md">
+            {{ error_msg }}
+        </div>
+    {% endif %}
+
+    <!-- SQL QUERY EXECUTOR WORKSPACE CONTROLS: Do sections mein divided hai (Dispatcher aur Console) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Pane: CRUD Task Dispatcher (5 Columns) - Sare buttons aur dynamic forms yahan hain -->
+        <div class="lg:col-span-5 space-y-4">
+            
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-2xl backdrop-blur-sm space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-2.5 mb-2">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                        🛠️ SQL Action Hub
+                    </h3>
+                    <span class="text-[9px] text-slate-500 uppercase font-black">Dynamic aur Quick Modes</span>
+                </div>
+
+                <!-- 1. CREATE TABLE FORM: Custom Table Name input ke sath -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[11px] font-bold text-slate-200">1. CREATE TABLE </span>
+                        <span class="text-[9px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded font-mono">DDL</span>
+                    </div>
+                    
+                    <form method="POST" class="space-y-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="create_table">
+                        <div>
+                            <label class="block text-[9px] uppercase font-bold text-slate-500 mb-1">write your table name</label>
+                            <input type="text" name="table_name" value="{{ active_table }}" placeholder="e.g. mindsync_teacher_demo" required
+                                   class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 font-mono focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] uppercase tracking-wider py-2 rounded-lg transition-colors">
+                            CREATE TABLE
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 2. INSERT SINGLE RECORD FORM: Manual Task inputs ke sath -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-3 {% if not table_exists %}opacity-40 pointer-events-none{% endif %}">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[11px] font-bold text-slate-200">2. INSERT SINGLE ROW </span>
+                        <span class="text-[9px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded font-mono">DML</span>
+                    </div>
+                    
+                    <form method="POST" class="space-y-2.5">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="insert_single">
+                        
+                        <div class="grid grid-cols-1 gap-2">
+                            <div>
+                                <label class="block text-[9px] uppercase font-bold text-slate-500 mb-1">Task Name</label>
+                                <input type="text" name="task_name" placeholder="Database Normalization Challenge" required
+                                       class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[9px] uppercase font-bold text-slate-500 mb-1">Difficulty Level</label>
+                                    <select name="difficulty" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2 py-1.5 text-xs text-slate-300 focus:outline-none">
+                                        <option value="Easy">Easy</option>
+                                        <option value="Medium" selected>Medium</option>
+                                        <option value="Hard">Hard</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[9px] uppercase font-bold text-slate-500 mb-1">XP Reward Points</label>
+                                    <input type="number" name="xp_reward" value="150" required
+                                           class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 font-mono focus:outline-none focus:border-indigo-500">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[10px] uppercase tracking-wider py-2 rounded-lg transition-colors">
+                            INSERT SINGLE Record (Execute Query)
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 3. INSERT MULTIPLE RECORDS FORM: Do alag row values inputs ek sath add karne ke liye -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-3 {% if not table_exists %}opacity-40 pointer-events-none{% endif %}">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[11px] font-bold text-slate-200">3. INSERT MULTIPLE </span>
+                        <span class="text-[9px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded font-mono">DML Bulk</span>
+                    </div>
+                    
+                    <form method="POST" class="space-y-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="insert_multiple">
+                        
+                        <!-- Row Tuple #1 Inputs -->
+                        <div class="p-2.5 bg-slate-900/60 rounded-lg border border-slate-800 space-y-2">
+                            <span class="text-[8px] uppercase font-bold text-indigo-400 font-mono tracking-widest block">First Row Data</span>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" name="r1_task_name" placeholder="React Interface Setup" required
+                                       class="col-span-2 bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-[11px] text-slate-200">
+                                <select name="r1_difficulty" class="bg-slate-950 border border-slate-800 rounded px-1.5 py-1 text-[11px] text-slate-300">
+                                    <option value="Easy" selected>Easy</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Hard">Hard</option>
+                                </select>
+                                <input type="number" name="r1_xp_reward" value="100" required
+                                       class="bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-[11px] text-slate-200 font-mono">
+                            </div>
+                        </div>
+
+                        <!-- Row Tuple #2 Inputs -->
+                        <div class="p-2.5 bg-slate-900/60 rounded-lg border border-slate-800 space-y-2">
+                            <span class="text-[8px] uppercase font-bold text-orange-400 font-mono tracking-widest block">Second Row Data</span>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" name="r2_task_name" placeholder="FastAPI Encryption Setup" required
+                                       class="col-span-2 bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-[11px] text-slate-200">
+                                <select name="r2_difficulty" class="bg-slate-950 border border-slate-800 rounded px-1.5 py-1 text-[11px] text-slate-300">
+                                    <option value="Easy">Easy</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Hard" selected>Hard</option>
+                                </select>
+                                <input type="number" name="r2_xp_reward" value="300" required
+                                       class="bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-[11px] text-slate-200 font-mono">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] uppercase tracking-wider py-2 rounded-lg transition-colors">
+                            INSERT MULTIPLE Query (Execute Both)
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 4. UPDATE DATA FORM: Automated Quick vs Custom Input mode tab controller -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-3 {% if not table_exists %}opacity-40 pointer-events-none{% endif %}">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[11px] font-bold text-slate-200">4. UPDATE OPERATION </span>
+                        <span class="text-[9px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded font-mono">DML Update</span>
+                    </div>
+                    
+                    <!-- Form mode switch tab triggers -->
+                    <div class="grid grid-cols-2 gap-2 border-b border-slate-800 pb-2">
+                        <button type="button" onclick="toggleUpdateMode('quick_mode_form', 'custom_mode_form', this)" class="text-[9px] font-bold uppercase tracking-wider bg-slate-900 text-indigo-400 py-1.5 rounded border border-indigo-900/30">
+                            Quick Demo (+50 XP)
+                        </button>
+                        <button type="button" onclick="toggleUpdateMode('custom_mode_form', 'quick_mode_form', this)" class="text-[9px] font-bold uppercase tracking-wider text-slate-500 hover:text-slate-300 py-1.5 rounded">
+                            Write Custom Update Query
+                        </button>
+                    </div>
+
+                    <!-- Quick Update action form container (Default Visible) -->
+                    <form method="POST" id="quick_mode_form" class="space-y-2">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="update_data">
+                        <input type="hidden" name="update_mode" value="quick">
+                        <p class="text-[10px] text-slate-400 leading-relaxed font-sans">
+                            SQL target execution query <strong>'Hard'</strong> task elements XP rewards will be <strong>+50</strong> incremented.
+                        </p>
+                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold text-[10px] uppercase tracking-wider py-2 rounded-lg transition-colors">
+                            Quick Bulk Update 
+                        </button>
+                    </form>
+
+                    <!-- Custom Update action form container (Hidden on boot) -->
+                    <form method="POST" id="custom_mode_form" class="space-y-2.5 hidden animate-fadeIn">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="update_data">
+                        <input type="hidden" name="update_mode" value="custom">
+                        
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1">
+                                <label class="block text-[8px] uppercase font-bold text-slate-500 mb-0.5">Target Record ID</label>
+                                <input type="number" name="record_id" placeholder="ID" required
+                                       class="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-slate-200 font-mono">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-[8px] uppercase font-bold text-slate-500 mb-0.5">New Task Name (Leave Blank to Keep Current)</label>
+                                <input type="text" name="u_task_name" placeholder="Leave blank to keep current name"
+                                       class="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-slate-200">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[8px] uppercase font-bold text-slate-500 mb-0.5">New Difficulty</label>
+                                <select name="u_difficulty" class="w-full bg-slate-900 border border-slate-800 rounded px-1.5 py-1 text-xs text-slate-350">
+                                    <option value="">-- No Change --</option>
+                                    <option value="Easy">Easy</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Hard">Hard</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[8px] uppercase font-bold text-slate-500 mb-0.5">New XP Reward</label>
+                                <input type="number" name="u_xp_reward" placeholder="e.g. 500"
+                                       class="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-slate-200 font-mono">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold text-[10px] uppercase tracking-wider py-2 rounded-lg transition-colors">
+                            UPDATE Query (Execute Changes)
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 5. DELETE DYNAMIC DATA FORM: Targeted ID remove controller -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-3 {% if not table_exists %}opacity-40 pointer-events-none{% endif %}">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[11px] font-bold text-slate-200">5. DELETE SPECIFIC RECORD </span>
+                        <span class="text-[9px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded font-mono">DML Delete</span>
+                    </div>
+                    
+                    <form method="POST" class="space-y-2.5">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="delete_data">
+                        <div class="grid grid-cols-1 gap-1">
+                            <label class="block text-[8px] uppercase font-bold text-slate-500">Record ID to Delete</label>
+                            <div class="flex gap-2">
+                                <input type="number" name="record_id" placeholder="e.g. 1" required
+                                       class="flex-grow bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 font-mono focus:outline-none">
+                                <button type="submit" class="bg-rose-600 hover:bg-rose-500 text-white font-bold text-[10px] uppercase tracking-wider px-5 py-1.5 rounded-lg transition-colors">
+                                    Delete Row
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <!-- Quick Delete target hyperlink (falls back to latest serial ID) -->
+                    <form method="POST" class="text-right">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="delete_data">
+                        <button type="submit" class="text-[9px] text-rose-400 font-bold hover:underline">
+                            Delete Latest Record &rarr;
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Drop Table clean-up reset form DDL command mapping -->
+                <form method="POST" class="flex items-center justify-between bg-slate-950/40 p-3 rounded-xl border border-dashed border-slate-800 {% if not table_exists %}opacity-40 pointer-events-none{% endif %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="drop_table">
+                    <div>
+                        <span class="block text-[11px] font-bold text-slate-400">DROP TABLE</span>
+                        <span class="text-[9px] text-slate-600 block">Remove all records and reset the table</span>
+                    </div>
+                    <button type="submit" class="bg-slate-800 hover:bg-slate-700 text-slate-400 font-bold text-[10px] uppercase tracking-wider px-4 py-2 rounded-lg transition-colors">
+                        Drop Table
+                    </button>
+                </form>
+            </div>
+
+        </div>
+
+        <!-- Right Pane: Live Generated Query View & Selected Data Table representation (7 Columns) -->
+        <div class="lg:col-span-7 space-y-4">
+            
+            <!-- SQL Console Code Block Output: Executed Raw queries stream -->
+            <div class="bg-slate-950 border border-slate-850 p-5 rounded-2xl shadow-xl flex flex-col justify-between space-y-3">
+                <span class="text-[9px] uppercase tracking-widest text-indigo-400 font-black block border-b border-slate-850 pb-2">
+                    Console Logs: All Executed SQL Queries (Live Stream)
+                </span>
+                <div class="bg-slate-900 border border-slate-850 p-3.5 rounded-xl font-mono text-xs text-sky-400 overflow-x-auto min-h-[100px] leading-relaxed">
+                    {% if sql_executed %}
+                        {{ sql_executed|linebreaks }}
+                    {% else %}
+                        -- Ready to execute SQL commands
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- LIVE DATA VIEW (SELECT DATA OUTCOME) -->
+            <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl shadow-xl backdrop-blur-sm">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-slate-800 pb-2.5 mb-4 gap-2">
+                    <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                        6. SELECT DATA (Live PostgreSQL Table View)
+                    </span>
+                    <span class="text-[9px] font-mono text-emerald-400 font-semibold bg-emerald-950 px-2.5 py-0.5 rounded border border-emerald-900/30 truncate max-w-full">
+                        {{ select_sql }}
+                    </span>
+                </div>
+
+                <!-- Table records list container loop mapping outputs dynamically -->
+                {% if table_exists %}
+                    {% if table_data %}
+                        <div class="overflow-x-auto animate-fadeIn">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-800 text-[10px] uppercase tracking-wider text-slate-500 font-bold font-mono">
+                                        <th class="py-2 px-3">ID</th>
+                                        <th class="py-2 px-3">Task Ka Naam</th>
+                                        <th class="py-2 px-3">Difficulty</th>
+                                        <th class="py-2 px-3 text-right">XP Reward</th>
+                                        <th class="py-2 px-3 text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800 text-xs">
+                                    {% for row in table_data %}
+                                        <tr class="hover:bg-slate-950/40 text-slate-300 font-mono transition-colors">
+                                            <td class="py-2.5 px-3 font-bold text-indigo-400">{{ row.0 }}</td>
+                                            <td class="py-2.5 px-3 font-semibold font-sans text-slate-100">{{ row.1 }}</td>
+                                            <td class="py-2.5 px-3">
+                                                <span class="px-2 py-0.5 rounded text-[9px] uppercase font-bold
+                                                    {% if row.2 == 'Easy' %}bg-emerald-950 text-emerald-400 border border-emerald-900/30
+                                                    {% elif row.2 == 'Medium' %}bg-amber-950 text-amber-400 border border-amber-900/30
+                                                    {% else %}bg-rose-950 text-rose-400 border border-rose-900/30{% endif %}">
+                                                    {{ row.2 }}
+                                                </span>
+                                            </td>
+                                            <td class="py-2.5 px-3 text-right font-bold text-indigo-300">{{ row.3 }} XP</td>
+                                            <td class="py-2.5 px-3 text-center">
+                                                <form method="POST" class="inline">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="action" value="delete_data">
+                                                    <input type="hidden" name="record_id" value="{{ row.0 }}">
+                                                    <button type="submit" title="Delete record {{ row.0 }}" class="text-rose-400 hover:text-rose-300 font-black text-xs hover:scale-110 transition-transform">
+                                                        &times;
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8 text-slate-500 text-xs font-semibold bg-slate-950/40 border border-dashed border-slate-800 rounded-xl animate-fadeIn">
+                            Table '{{ active_table }}' No Data in it<br>
+                            Insert the above mention Inputs!
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center py-10 text-slate-500 text-xs font-semibold bg-slate-950/40 border border-dashed border-slate-800 rounded-xl animate-fadeIn">
+                        ⚠️ Table '{{ active_table }}' PostgreSQL database schema does not exist.<br>
+                        click on "CREATE TABLE" to create it.
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Client-side script to toggle update mode tab container elements -->
+<script>
+    function toggleUpdateMode(showId, hideId, btn) {
+        document.getElementById(showId).classList.remove('hidden');
+        document.getElementById(hideId).classList.add('hidden');
+        
+        // Deselect active indicators from siblings
+        const row = btn.parentElement;
+        row.querySelectorAll('button').forEach(b => {
+            b.className = "text-[9px] font-bold uppercase tracking-wider text-slate-500 hover:text-slate-300 py-1.5 rounded";
+        });
+        
+        // Attach active indicator class to clicked button
+        btn.className = "text-[9px] font-bold uppercase tracking-wider bg-slate-900 text-indigo-400 py-1.5 rounded border border-indigo-900/30";
+    }
+</script>
+{% endblock %}

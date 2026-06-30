@@ -1,0 +1,24 @@
+{% extends 'authentication/base.html' %}
+
+{% block content %}
+<div class="w-full max-w-5xl rounded-3xl border border-slate-800/70 bg-slate-900/80 p-8 shadow-2xl backdrop-blur-md md:p-10">
+    <div class="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+        <div class="rounded-3xl border border-slate-800/70 bg-gradient-to-br from-slate-950/80 to-slate-900/40 p-6">
+            <div class="inline-flex items-center gap-2 rounded-full border border-slate-700/60 bg-slate-950/60 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.28em] text-slate-300">
+                Products
+            </div>
+            <h1 class="mt-5 text-4xl font-black tracking-tight text-white md:text-5xl">{{ page_title }}</h1>
+            <p class="mt-4 text-sm leading-6 text-slate-300 md:text-base">{{ page_description }}</p>
+        </div>
+
+        <div class="grid gap-3 sm:grid-cols-2">
+            {% for highlight in page_highlights %}
+            <div class="rounded-2xl border border-slate-800/70 bg-slate-950/60 p-5 text-sm text-slate-200">{{ highlight }}</div>
+            {% endfor %}
+            <div class="sm:col-span-2 rounded-2xl border border-slate-800/70 bg-indigo-950/30 p-5 text-sm text-slate-300">
+                Each product surface shares the same visual language, navigation behavior, and responsive structure.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

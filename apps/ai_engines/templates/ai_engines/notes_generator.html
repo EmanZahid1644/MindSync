@@ -1,0 +1,867 @@
+{% extends 'authentication/base.html' %}
+
+{% block content %}
+<div class="max-w-7xl w-full mx-auto p-4 md:p-6 lg:p-8 space-y-6">
+
+    <!-- Modern Header with Gradient -->
+    <div class="relative overflow-hidden rounded-2xl">
+        <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/30 via-slate-900/90 to-slate-950/95 backdrop-blur-xl"></div>
+        <div class="relative px-6 py-8 md:py-10">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-gradient-to-br from-indigo-900/50 to-indigo-700/30 border border-indigo-700/40 rounded-2xl shadow-inner shadow-indigo-900/20">
+                        <svg class="w-7 h-7 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-black text-white tracking-tight bg-gradient-to-r from-indigo-100 to-white bg-clip-text text-transparent">
+                            AI Notes & Study Pack Generator
+                        </h1>
+                        <p class="text-xs text-slate-400/80 mt-0.5 font-medium">Upload textbooks or slides to generate AI-powered study materials</p>
+                    </div>
+                </div>
+                <a href="{% url 'platform_home' %}" class="group inline-flex items-center gap-2 text-xs bg-slate-950/80 hover:bg-slate-900 text-slate-400 hover:text-white border border-slate-800/60 hover:border-slate-700 px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl backdrop-blur-sm">
+                    <svg class="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Main Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-slate-900/60 border border-slate-800/50 rounded-xl px-4 py-3">
+            <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Total Assets</p>
+            <p class="text-xl font-black text-white">{{ materials|length|default:0 }}</p>
+        </div>
+        <div class="bg-slate-900/60 border border-slate-800/50 rounded-xl px-4 py-3">
+            <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Processed</p>
+            <p class="text-xl font-black text-emerald-400">{{ materials|length|default:0 }}</p>
+        </div>
+        <div class="bg-slate-900/60 border border-slate-800/50 rounded-xl px-4 py-3">
+            <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">AI Packs</p>
+            <p class="text-xl font-black text-indigo-400">
+                {% with packs=0 %}
+                    {% for m in materials %}{% if m.study_pack %}{% with packs=packs|add:1 %}{% endwith %}{% endif %}{% endfor %}
+                    {{ materials|length }}
+                {% endwith %}
+            </p>
+        </div>
+        <div class="bg-slate-900/60 border border-slate-800/50 rounded-xl px-4 py-3">
+            <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Flashcards</p>
+            <p class="text-xl font-black text-amber-400">0</p>
+        </div>
+    </div>
+
+    <!-- Main Two-Column Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+
+        <!-- Upload Section - Left Column -->
+        <div class="lg:col-span-2" id="upload-panel">
+            <div class="bg-gradient-to-br from-slate-900/90 to-slate-950/90 border border-slate-800/60 rounded-2xl p-6 shadow-2xl backdrop-blur-sm sticky top-6">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="text-lg">📤</span>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Upload Document</h3>
+                    <span class="ml-auto text-[10px] bg-indigo-950/40 text-indigo-400 border border-indigo-800/30 px-2.5 py-0.5 rounded-full font-bold">NEW</span>
+                </div>
+                
+                <form method="POST" action="{% url 'trigger_file_upload' %}" enctype="multipart/form-data" class="space-y-5">
+                    {% csrf_token %}
+                    
+                    <!-- Title Input -->
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                            <span class="flex items-center gap-2">
+                                📝 Pack Title
+                                <span class="text-[10px] font-normal text-slate-500">(optional)</span>
+                            </span>
+                        </label>
+                        <input type="text" name="title" placeholder="e.g., OS Lecture 3 - Processes" 
+                               class="w-full bg-slate-950/80 border border-slate-800/60 rounded-xl px-4 py-3.5 text-sm text-slate-200 placeholder-slate-600/70 focus:outline-none focus:border-indigo-500/70 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-300 font-medium">
+                    </div>
+                    
+                    <!-- File Upload -->
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                            <span class="flex items-center gap-2">📂 Select File</span>
+                        </label>
+                        <div class="relative border-2 border-dashed border-slate-800/60 hover:border-indigo-500/60 rounded-xl bg-slate-950/40 p-10 text-center transition-all duration-300 group hover:bg-slate-950/60">
+                            <input type="file" name="document" accept=".pdf,.txt" required id="file-input" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                            
+                            <div class="pointer-events-none">
+                                <div class="w-16 h-16 mx-auto rounded-2xl bg-indigo-950/30 border border-indigo-800/30 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                                    <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-sm font-semibold text-slate-300" id="file-name-indicator">Drop your file here</p>
+                                <p class="text-[11px] text-slate-500 mt-2 font-medium">or click to browse</p>
+                                <div class="flex items-center justify-center gap-3 mt-3">
+                                    <span class="text-[10px] bg-slate-800/50 px-2.5 py-1 rounded-full text-slate-400">PDF</span>
+                                    <span class="text-[10px] bg-slate-800/50 px-2.5 py-1 rounded-full text-slate-400">TXT</span>
+                                    <span class="text-[10px] bg-slate-800/50 px-2.5 py-1 rounded-full text-slate-400">≤15MB</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-bold py-4 px-4 rounded-xl text-sm tracking-wide transition-all duration-300 shadow-xl shadow-indigo-950/30 hover:shadow-indigo-950/50 active:scale-[0.97] flex items-center justify-center gap-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        Process & Extract Text
+                    </button>
+                </form>
+
+                <!-- Quick Tips -->
+                <div class="mt-6 p-4 bg-slate-950/40 border border-slate-800/40 rounded-xl">
+                    <h4 class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2">💡 Pro Tips</h4>
+                    <ul class="text-[11px] text-slate-400 space-y-1.5">
+                        <li class="flex items-start gap-2">
+                            <span class="text-indigo-400">•</span>
+                            Use clear, descriptive titles for better organization
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-indigo-400">•</span>
+                            PDFs with text layers work best (no scanned images)
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-indigo-400">•</span>
+                            Files are automatically processed by AI after upload
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Knowledge Base - Right Column -->
+        <div class="lg:col-span-3">
+            <div class="bg-gradient-to-br from-slate-900/90 to-slate-950/90 border border-slate-800/60 rounded-2xl p-6 shadow-2xl backdrop-blur-sm">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">📚</span>
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider">Knowledge Base</h3>
+                    </div>
+                    <span class="text-[10px] bg-slate-800/60 px-3 py-1 rounded-full text-slate-400 font-bold">
+                        {{ materials|length }} assets
+                    </span>
+                </div>
+
+                {% if materials %}
+                    <div class="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                        {% for file in materials %}
+                            <div class="group bg-slate-950/60 border border-slate-800/50 hover:border-indigo-800/40 rounded-xl p-4 transition-all duration-300 hover:bg-slate-950/80">
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="text-lg">📄</span>
+                                            <h4 class="text-sm font-bold text-white truncate">{{ file.title }}</h4>
+                                            {% if file.study_pack %}
+                                                <span class="flex-shrink-0 text-[9px] bg-emerald-950/60 text-emerald-400 border border-emerald-800/40 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                                                    AI Ready
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="flex items-center gap-3 text-[11px] text-slate-500 font-medium">
+                                            <span class="flex items-center gap-1">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                </svg>
+                                                {{ file.created_at|date:"M d, Y" }}
+                                            </span>
+                                            <span class="w-1 h-1 rounded-full bg-slate-700"></span>
+                                            <span class="text-indigo-400 font-mono">{{ file.extracted_text|length }} chars</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-2 flex-shrink-0">
+                                        {% if file.study_pack %}
+                                            <button onclick="revealPack('pack-{{ file.id }}')" class="text-[10px] uppercase font-black tracking-widest bg-emerald-950/60 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-900/40 hover:border-emerald-500 px-4 py-2.5 rounded-lg transition-all duration-300 shadow-md hover:shadow-emerald-900/20 flex items-center gap-1.5">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                </svg>
+                                                View Pack
+                                            </button>
+                                        {% else %}
+                                            <a href="{% url 'trigger_ai_generation' file.id %}" class="text-[10px] uppercase font-black tracking-widest bg-indigo-950/50 hover:bg-indigo-600 text-indigo-400 hover:text-white border border-indigo-900/40 hover:border-indigo-500 px-4 py-2.5 rounded-lg transition-all duration-300 flex items-center gap-1.5">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                                </svg>
+                                                Generate Pack
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="bg-slate-950/60 border-2 border-dashed border-slate-800/50 rounded-xl p-20 text-center">
+                        <div class="text-6xl mb-4">📭</div>
+                        <p class="text-sm font-bold text-slate-400">No learning assets yet</p>
+                        <p class="text-xs text-slate-500 mt-2 max-w-sm mx-auto">Upload your first document to start building your AI-powered study pack</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Study Packs Section -->
+    {% for file in materials %}
+        {% if file.study_pack %}
+            <div id="pack-{{ file.id }}" class="hidden ai-pack-canvas animate-fadeIn">
+                <div class="bg-gradient-to-br from-slate-900/95 to-slate-950/95 border border-indigo-800/40 rounded-2xl shadow-2xl overflow-hidden">
+                    
+                    <!-- Pack Header -->
+                    <div class="bg-gradient-to-r from-indigo-950/60 to-slate-950/90 px-6 py-5 border-b border-indigo-800/30 flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-indigo-950/40 border border-indigo-700/30 rounded-xl">
+                                <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-black text-white">AI Study Pack</h2>
+                                <p class="text-xs text-slate-400">{{ file.title }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-[10px] bg-indigo-950/40 text-indigo-400 border border-indigo-800/30 px-3 py-1 rounded-full font-bold">
+                                {{ file.study_pack.flashcards|length }} Flashcards
+                            </span>
+                            <button onclick="this.closest('.ai-pack-canvas').classList.add('hidden')" class="text-slate-500 hover:text-slate-300 transition-colors p-1 rounded-lg hover:bg-slate-800/50">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Pack Content -->
+                    <div class="p-6 space-y-6" id="pack-content-{{ file.id }}">
+                        <!-- Summary & Concepts Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="bg-slate-950/60 border border-slate-800/50 p-5 rounded-xl">
+                                <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                    <span>📋</span> Executive Summary
+                                </h3>
+                                <p class="text-sm text-slate-300 leading-relaxed font-medium">{{ file.study_pack.summary }}</p>
+                            </div>
+                            <div class="bg-slate-950/60 border border-slate-800/50 p-5 rounded-xl">
+                                <h3 class="text-xs font-bold text-sky-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                    <span>🎯</span> Core Concepts
+                                </h3>
+                                <div class="text-sm text-slate-300 space-y-1.5 font-medium">
+                                    {{ file.study_pack.key_concepts|linebreaks }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Flashcards -->
+                        <div id="quiz-section-{{ file.id }}" class="bg-slate-950/60 border border-slate-800/50 rounded-xl p-5">
+                            <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <span>🃏</span> Active Recall Flashcards
+                                <span class="ml-auto text-[10px] bg-slate-800/60 px-2.5 py-0.5 rounded-full text-slate-400">{{ file.study_pack.flashcards|length }}</span>
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {% for card in file.study_pack.flashcards %}
+                                    <div class="bg-slate-950 border border-slate-800/60 rounded-xl p-4 cursor-pointer group hover:border-indigo-800/50 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-950/20"
+                                         onclick="this.querySelector('.answer').classList.toggle('hidden'); this.querySelector('.reveal-hint').classList.toggle('hidden');">
+                                        <div class="flex items-start gap-3">
+                                            <span class="text-xs font-bold text-indigo-400 flex-shrink-0">Q{{ forloop.counter }}</span>
+                                            <p class="text-xs font-semibold text-slate-200 leading-relaxed">{{ card.q }}</p>
+                                        </div>
+                                        <div class="answer hidden mt-3 pt-3 border-t border-indigo-800/30">
+                                            <div class="flex items-start gap-3">
+                                                <span class="text-xs font-bold text-emerald-400 flex-shrink-0">A</span>
+                                                <p class="text-xs font-medium text-emerald-300 leading-relaxed">{{ card.a }}</p>
+                                            </div>
+                                        </div>
+                                        <p class="reveal-hint text-[9px] uppercase tracking-widest text-slate-600 font-bold mt-2 text-center group-hover:text-indigo-400 transition-colors">
+                                            Click to reveal answer
+                                        </p>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Quiz Arena -->
+                        <div class="bg-slate-950/60 border border-slate-800/50 rounded-xl p-5">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                                <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
+                                    <span>🧪</span> Quiz Arena
+                                    <span class="ml-auto text-[10px] bg-slate-800/60 px-2.5 py-0.5 rounded-full text-slate-400">{{ file.study_pack.quiz_challenges|length }}</span>
+                                </h3>
+                                <a href="#upload-panel" class="inline-flex items-center gap-2 text-[10px] uppercase font-black tracking-widest bg-indigo-950/50 hover:bg-indigo-600 text-indigo-400 hover:text-white border border-indigo-900/40 hover:border-indigo-500 px-4 py-2.5 rounded-lg transition-all duration-300 w-fit">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                    Upload New Material
+                                </a>
+                            </div>
+
+                            {% if file.study_pack.quiz_challenges %}
+                                <form class="quiz-attempt-form space-y-4" data-material-id="{{ file.id }}" data-quiz-mode="mixed" data-time-per-question="90">
+                                    {% csrf_token %}
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl border border-amber-900/30 bg-amber-950/30">
+                                        <div>
+                                            <p class="text-[10px] font-black uppercase tracking-widest text-amber-400">Timed Assessment</p>
+                                            <p class="text-xs text-slate-300 mt-1">Complete this quiz before the timer ends. Review appears immediately after submit.</p>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg bg-slate-950/60 text-slate-300 border border-slate-800/60">Difficulty mix</span>
+                                            <span class="text-sm font-black font-mono text-amber-300 bg-slate-950/70 border border-amber-900/40 px-3 py-2 rounded-xl">
+                                                Time left: <span class="quiz-timer">--:--</span>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {% for question in file.study_pack.quiz_challenges %}
+                                        <div class="quiz-question-block bg-slate-950 border border-slate-800/60 rounded-xl p-4" data-question-index="{{ forloop.counter }}" data-correct-answer="{{ question.correct_answer|escape }}" data-xp-reward="{{ question.xp_reward|default:0 }}" data-difficulty="{{ question.difficulty|default:'medium' }}" data-explanation="{{ question.explanation|default:'Review the source material for the exact reasoning behind this answer.'|escape }}">
+                                            <div class="flex items-start justify-between gap-3 mb-3">
+                                                <div>
+                                                    <div class="flex flex-wrap items-center gap-2">
+                                                        <p class="text-[10px] font-black uppercase tracking-widest text-slate-500">{{ question.type }}</p>
+                                                        <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg bg-slate-800/70 text-slate-300 border border-slate-700/60">{{ question.difficulty|default:'medium' }}</span>
+                                                    </div>
+                                                    <p class="text-sm font-semibold text-slate-200 mt-1">{{ forloop.counter }}. {{ question.question }}</p>
+                                                </div>
+                                                <span class="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg bg-amber-950/40 text-amber-400 border border-amber-900/40 whitespace-nowrap">{{ question.xp_reward|default:0 }} XP</span>
+                                            </div>
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                {% for option in question.options %}
+                                                    <label class="flex items-center gap-3 px-3 py-2 rounded-lg border border-slate-800/60 bg-slate-950/80 hover:border-indigo-700/50 hover:bg-slate-900/80 cursor-pointer transition-all">
+                                                        <input type="radio" name="quiz-{{ file.id }}-{{ forloop.parentloop.counter }}" value="{{ option|escape }}" class="accent-indigo-500">
+                                                        <span class="text-xs text-slate-300 font-medium">{{ option }}</span>
+                                                    </label>
+                                                {% endfor %}
+                                            </div>
+                                            <div class="quiz-feedback hidden mt-4 pt-3 border-t border-slate-800/60 space-y-2"></div>
+                                        </div>
+                                    {% endfor %}
+
+                                    <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                                        <p class="text-[11px] text-slate-500 font-medium">Select answers for each question, then submit to save score, accuracy, and achievement data.</p>
+                                        <button type="submit" class="inline-flex items-center gap-2 text-[10px] uppercase font-black tracking-widest bg-emerald-950/50 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-900/40 hover:border-emerald-500 px-5 py-2.5 rounded-lg transition-all duration-300">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                            Submit Quiz
+                                        </button>
+                                    </div>
+                                </form>
+                            {% else %}
+                                <div class="border-2 border-dashed border-slate-800/50 rounded-xl p-10 text-center text-slate-500 text-xs font-semibold bg-slate-950/30">
+                                    <p class="font-bold text-slate-400">No quiz questions generated yet</p>
+                                    <p class="text-[11px] text-slate-500 mt-1">Generate the study pack again after upload to populate MCQs, True/False, scenarios, and mini challenges.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Export Actions -->
+                        <div class="flex flex-wrap gap-3 pt-2">
+                            <button onclick="exportPackAsPDF('pack-content-{{ file.id }}', '{{ file.title }}')" class="text-xs bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/50 px-5 py-2.5 rounded-xl font-medium transition-all duration-300 flex items-center gap-2">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                </svg>
+                                Export PDF
+                            </button>
+                            <button onclick="sharePack('{{ file.id }}', '{{ file.title }}')" class="text-xs bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/50 px-5 py-2.5 rounded-xl font-medium transition-all duration-300 flex items-center gap-2">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                                </svg>
+                                Share Pack
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+</div>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) {
+            return parts.pop().split(';').shift();
+        }
+        return '';
+    }
+
+    function formatTime(seconds) {
+        const safeSeconds = Math.max(0, Math.floor(seconds));
+        const minutes = String(Math.floor(safeSeconds / 60)).padStart(2, '0');
+        const remaining = String(safeSeconds % 60).padStart(2, '0');
+        return `${minutes}:${remaining}`;
+    }
+
+    function startQuizTimers() {
+        document.querySelectorAll('.quiz-attempt-form').forEach((form) => {
+            const timerEl = form.querySelector('.quiz-timer');
+            if (!timerEl) {
+                return;
+            }
+
+            const questionCount = form.querySelectorAll('.quiz-question-block').length;
+            const timePerQuestion = Number(form.dataset.timePerQuestion || 90);
+            let remainingSeconds = Math.max(300, questionCount * timePerQuestion);
+            timerEl.textContent = formatTime(remainingSeconds);
+
+            const intervalId = window.setInterval(() => {
+                remainingSeconds -= 1;
+                timerEl.textContent = formatTime(remainingSeconds);
+
+                if (remainingSeconds <= 0) {
+                    window.clearInterval(intervalId);
+                    const submitButton = form.querySelector('button[type="submit"]');
+                    if (submitButton && !submitButton.disabled) {
+                        submitButton.click();
+                    }
+                }
+            }, 1000);
+
+            form.dataset.timerId = String(intervalId);
+        });
+    }
+
+    function renderQuizReview(form, payload) {
+        const questionBlocks = Array.from(form.querySelectorAll('.quiz-question-block'));
+        questionBlocks.forEach((block) => {
+            const feedback = block.querySelector('.quiz-feedback');
+            const questionIndex = block.dataset.questionIndex || '?';
+            const selected = block.querySelector('input[type="radio"]:checked');
+            const correctAnswer = block.dataset.correctAnswer || '';
+            const explanation = block.dataset.explanation || 'Review the source material.';
+            const difficulty = block.dataset.difficulty || 'medium';
+            const isCorrect = selected && selected.value === correctAnswer;
+
+            if (!feedback) {
+                return;
+            }
+
+            feedback.classList.remove('hidden');
+            feedback.innerHTML = `
+                <div class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest ${isCorrect ? 'text-emerald-400' : 'text-rose-400'}">
+                    <span>${isCorrect ? 'Correct' : 'Wrong'}</span>
+                    <span class="text-slate-500">•</span>
+                    <span>${difficulty}</span>
+                </div>
+                <p class="text-xs text-slate-300"><span class="text-slate-500 font-bold">Selected:</span> ${selected ? selected.value : 'No answer selected'}</p>
+                <p class="text-xs text-slate-300"><span class="text-slate-500 font-bold">Correct:</span> ${correctAnswer}</p>
+                <p class="text-xs text-slate-400 leading-relaxed">${explanation}</p>
+            `;
+        });
+
+        const reviewSummary = document.createElement('div');
+        reviewSummary.className = 'mt-4 p-4 rounded-xl border border-slate-800/60 bg-slate-950/60';
+        reviewSummary.innerHTML = `
+            <div class="flex flex-wrap items-center gap-2 text-xs font-bold text-slate-300">
+                <span class="px-2.5 py-1 rounded-lg bg-emerald-950/40 text-emerald-400 border border-emerald-900/40">Score ${payload.score}</span>
+                <span class="px-2.5 py-1 rounded-lg bg-sky-950/40 text-sky-400 border border-sky-900/40">Accuracy ${payload.accuracy}%</span>
+                <span class="px-2.5 py-1 rounded-lg bg-amber-950/40 text-amber-400 border border-amber-900/40">XP ${payload.unlocked_xp}</span>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-2">Review the answers above. Correct answers and short explanations are shown inline.</p>
+        `;
+
+        const existing = form.querySelector('.quiz-review-summary');
+        if (existing) {
+            existing.remove();
+        }
+        reviewSummary.classList.add('quiz-review-summary');
+        form.appendChild(reviewSummary);
+    }
+
+    function openLatestPackAndQuiz() {
+        const autoOpenLatest = "{{ auto_open_latest|yesno:'true,false' }}" === "true";
+        const latestMaterialId = "{{ latest_material_id|default:'' }}";
+
+        if (!autoOpenLatest || !latestMaterialId) {
+            return;
+        }
+
+        const pack = document.getElementById(`pack-${latestMaterialId}`);
+        const quizSection = document.getElementById(`quiz-section-${latestMaterialId}`);
+
+        if (pack) {
+            pack.classList.remove('hidden');
+            setTimeout(() => {
+                if (quizSection) {
+                    quizSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    pack.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 150);
+        }
+    }
+
+    function revealPack(packId) {
+        // Hide all visible packs
+        document.querySelectorAll('.ai-pack-canvas').forEach(el => el.classList.add('hidden'));
+        
+        // Show selected pack
+        const selectedPack = document.getElementById(packId);
+        if(selectedPack) {
+            selectedPack.classList.remove('hidden');
+            setTimeout(() => {
+                selectedPack.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+    }
+
+    // Export Pack as PDF
+    function exportPackAsPDF(contentId, title) {
+        const element = document.getElementById(contentId);
+        if (!element) {
+            alert('Pack content not found!');
+            return;
+        }
+
+        // Show loading state
+        const btn = event.target.closest('button');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `
+            <svg class="w-3.5 h-3.5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Generating...
+        `;
+        btn.disabled = true;
+
+        // Clone the element to avoid modifying the original
+        const clone = element.cloneNode(true);
+        
+        // Style the clone for PDF
+        clone.style.padding = '20px';
+        clone.style.background = '#0f172a';
+        clone.style.color = '#e2e8f0';
+        clone.style.borderRadius = '12px';
+        clone.style.fontFamily = 'Arial, sans-serif';
+        
+        // Remove interactive elements from clone
+        clone.querySelectorAll('.cursor-pointer').forEach(el => {
+            el.style.cursor = 'default';
+        });
+        clone.querySelectorAll('.answer').forEach(el => {
+            el.classList.remove('hidden');
+        });
+        clone.querySelectorAll('.reveal-hint').forEach(el => {
+            el.classList.add('hidden');
+        });
+        
+        // Create wrapper with proper styling
+        const wrapper = document.createElement('div');
+        wrapper.style.padding = '30px';
+        wrapper.style.background = '#0f172a';
+        wrapper.style.color = '#e2e8f0';
+        wrapper.style.fontFamily = 'Arial, sans-serif';
+        wrapper.style.width = '100%';
+        
+        // Add title header
+        const header = document.createElement('div');
+        header.style.borderBottom = '2px solid #4f46e5';
+        header.style.paddingBottom = '15px';
+        header.style.marginBottom = '20px';
+        header.innerHTML = `
+            <h1 style="font-size: 24px; font-weight: bold; color: #818cf8; margin: 0;">AI Study Pack</h1>
+            <p style="font-size: 14px; color: #94a3b8; margin: 5px 0 0 0;">${title}</p>
+            <p style="font-size: 12px; color: #64748b; margin: 5px 0 0 0;">Generated on ${new Date().toLocaleDateString()}</p>
+        `;
+        wrapper.appendChild(header);
+        wrapper.appendChild(clone);
+
+        // Generate PDF
+        const opt = {
+            margin:       10,
+            filename:     `Study_Pack_${title.replace(/\s+/g, '_')}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, backgroundColor: '#0f172a', letterRendering: true },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+
+        html2pdf().set(opt).from(wrapper).save().then(() => {
+            // Reset button
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }).catch((err) => {
+            console.error('PDF Generation Error:', err);
+            alert('Error generating PDF. Please try again.');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        });
+    }
+
+    // Share Pack Function
+    function sharePack(packId, title) {
+        // Get the pack content
+        const packElement = document.getElementById(`pack-${packId}`);
+        if (!packElement) {
+            alert('Pack not found!');
+            return;
+        }
+
+        // Extract data
+        const summary = packElement.querySelector('.bg-indigo-400\\/10')?.textContent || '';
+        const concepts = packElement.querySelector('.bg-sky-400\\/10')?.textContent || '';
+        
+        // Get flashcards
+        const flashcardElements = packElement.querySelectorAll('.cursor-pointer');
+        let flashcards = [];
+        flashcardElements.forEach(el => {
+            const q = el.querySelector('.text-indigo-400')?.textContent || '';
+            const a = el.querySelector('.text-emerald-400')?.textContent || '';
+            if (q && a) {
+                flashcards.push({ q, a });
+            }
+        });
+
+        // Create share data
+        const shareData = {
+            title: `Study Pack: ${title}`,
+            text: `📚 AI Study Pack: ${title}\n\n📋 Summary: ${summary.substring(0, 200)}...\n\n🎯 Core Concepts: ${concepts.substring(0, 200)}...\n\n🃏 Flashcards: ${flashcards.length} cards available\n\nGenerated with MindSync AI Study Generator`,
+            url: window.location.href
+        };
+
+        // Try Web Share API first
+        if (navigator.share) {
+            navigator.share(shareData).then(() => {
+                console.log('Pack shared successfully!');
+            }).catch((err) => {
+                if (err.name !== 'AbortError') {
+                    console.error('Share error:', err);
+                    fallbackShare(shareData);
+                }
+            });
+        } else {
+            // Fallback for browsers without Web Share API
+            fallbackShare(shareData);
+        }
+    }
+
+    function fallbackShare(shareData) {
+        // Create a shareable text
+        const shareText = `${shareData.title}\n\n${shareData.text}`;
+        
+        // Copy to clipboard
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(shareText).then(() => {
+                showToast('📋 Pack link and details copied to clipboard!');
+            }).catch(() => {
+                manualCopy(shareText);
+            });
+        } else {
+            manualCopy(shareText);
+        }
+    }
+
+    function manualCopy(text) {
+        // Create a temporary textarea
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        
+        try {
+            document.execCommand('copy');
+            showToast('📋 Pack details copied to clipboard!');
+        } catch (err) {
+            showToast('💡 Share this pack: ' + text.substring(0, 100) + '...');
+        }
+        
+        document.body.removeChild(textarea);
+    }
+
+    // Toast Notification
+    function showToast(message) {
+        // Remove existing toast
+        const existingToast = document.querySelector('.toast-notification');
+        if (existingToast) {
+            existingToast.remove();
+        }
+
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-900 border border-indigo-800/60 text-white px-6 py-4 rounded-xl shadow-2xl backdrop-blur-xl z-50 animate-fadeIn';
+        toast.style.maxWidth = '90%';
+        toast.style.width = 'auto';
+        toast.innerHTML = `
+            <div class="flex items-center gap-3">
+                <span class="text-indigo-400 text-lg">${message.includes('📋') ? '📋' : '💡'}</span>
+                <span class="text-sm font-medium">${message}</span>
+                <button onclick="this.closest('.toast-notification').remove()" class="text-slate-500 hover:text-slate-300 ml-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        `;
+        document.body.appendChild(toast);
+
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }
+        }, 5000);
+    }
+
+    document.querySelectorAll('.quiz-attempt-form').forEach((form) => {
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const timerId = Number(form.dataset.timerId || 0);
+            if (timerId) {
+                window.clearInterval(timerId);
+            }
+
+            const questionBlocks = Array.from(form.querySelectorAll('.quiz-question-block'));
+            const materialId = form.dataset.materialId;
+            let correctAnswers = 0;
+            let score = 0;
+
+            questionBlocks.forEach((block) => {
+                const selected = block.querySelector('input[type="radio"]:checked');
+                const correctAnswer = block.dataset.correctAnswer || '';
+                const xpReward = Number(block.dataset.xpReward || 0);
+
+                if (selected && selected.value === correctAnswer) {
+                    correctAnswers += 1;
+                    score += xpReward || 10;
+                }
+            });
+
+            const totalQuestions = questionBlocks.length;
+            const accuracy = totalQuestions ? Number(((correctAnswers / totalQuestions) * 100).toFixed(2)) : 0;
+
+            const originalButton = form.querySelector('button[type="submit"]');
+            const originalText = originalButton ? originalButton.innerHTML : '';
+            if (originalButton) {
+                originalButton.disabled = true;
+                originalButton.innerHTML = 'Submitting...';
+            }
+
+            try {
+                const response = await fetch('{% url "save_quiz_result" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({
+                        material_id: materialId,
+                        score: score,
+                        accuracy: accuracy,
+                        total_questions: totalQuestions,
+                        correct_answers: correctAnswers,
+                        quiz_mode: 'mixed',
+                    }),
+                });
+
+                const payload = await response.json();
+                if (!response.ok || !payload.success) {
+                    throw new Error(payload.error || 'Quiz submission failed');
+                }
+
+                renderQuizReview(form, payload);
+                showToast(`✅ Quiz saved: ${correctAnswers}/${totalQuestions} correct, ${accuracy}% accuracy, ${payload.unlocked_xp} XP`);
+                setTimeout(() => {
+                    window.location.href = '{% url "platform_home" %}?quiz_saved=1';
+                }, 900);
+            } catch (error) {
+                console.error(error);
+                showToast(`⚠️ ${error.message}`);
+            } finally {
+                if (originalButton) {
+                    originalButton.disabled = false;
+                    originalButton.innerHTML = originalText;
+                }
+            }
+        });
+    });
+
+    // File input handler for better UX
+    document.addEventListener('DOMContentLoaded', function() {
+        startQuizTimers();
+        openLatestPackAndQuiz();
+        const fileInput = document.getElementById('file-input');
+        const fileNameDisplay = document.getElementById('file-name-indicator');
+        
+        if(fileInput && fileNameDisplay) {
+            fileInput.addEventListener('change', function(e) {
+                if(this.files && this.files[0]) {
+                    fileNameDisplay.textContent = this.files[0].name;
+                    fileNameDisplay.className = 'text-sm font-semibold text-indigo-400';
+                } else {
+                    fileNameDisplay.textContent = 'Drop your file here';
+                    fileNameDisplay.className = 'text-sm font-semibold text-slate-300';
+                }
+            });
+        }
+    });
+</script>
+
+<style>
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+    
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    .animate-spin {
+        animation: spin 1s linear infinite;
+    }
+    
+    /* Custom Scrollbar */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(30, 41, 59, 0.3);
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(99, 102, 241, 0.4);
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(99, 102, 241, 0.6);
+    }
+
+    /* Toast animation */
+    .toast-notification {
+        animation: slideUp 0.3s ease-out forwards;
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translate(-50%, 20px);
+        }
+        to {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+    }
+</style>
+{% endblock %}

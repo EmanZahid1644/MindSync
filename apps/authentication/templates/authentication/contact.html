@@ -1,0 +1,30 @@
+{% extends 'authentication/base.html' %}
+
+{% block content %}
+<div class="w-full max-w-5xl rounded-3xl border border-slate-800/70 bg-slate-900/80 p-8 shadow-2xl backdrop-blur-md md:p-10">
+    <div class="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+        <div>
+            <div class="inline-flex items-center gap-2 rounded-full border border-slate-700/60 bg-slate-950/60 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.28em] text-slate-300">
+                Contact
+            </div>
+            <h1 class="mt-5 text-4xl font-black tracking-tight text-white md:text-5xl">{{ page_title }}</h1>
+            <p class="mt-4 max-w-2xl text-sm leading-6 text-slate-300 md:text-base">{{ page_description }}</p>
+
+            <div class="mt-8 grid gap-3 sm:grid-cols-3">
+                {% for highlight in page_highlights %}
+                <div class="rounded-2xl border border-slate-800/70 bg-slate-950/60 p-4 text-sm text-slate-200">{{ highlight }}</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="rounded-3xl border border-slate-800/70 bg-gradient-to-br from-sky-950/40 to-slate-950/60 p-6">
+            <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Need help fast?</p>
+            <div class="mt-4 space-y-3 text-sm text-slate-300">
+                <div class="rounded-2xl border border-slate-800/70 bg-slate-950/60 p-4">Use the AI Coach for guided support.</div>
+                <div class="rounded-2xl border border-slate-800/70 bg-slate-950/60 p-4">Return to the login page for account access.</div>
+                <div class="rounded-2xl border border-slate-800/70 bg-slate-950/60 p-4">Footer links stay available on every public page.</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
