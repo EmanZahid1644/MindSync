@@ -22,7 +22,7 @@ MindSync AI is an enterprise-grade, web-based student success, telemetry analyti
 * **GPA Projection Engine:** Executes deterministic linear interpolation algorithms to forecast future CGPA trends based on simulated academic variable changes.
 
 ### ⚡ Optimization & Resource Discovery (`planner`)
-* **Zero-Redundancy Registry:** Implements a localized database lookup caching mechanism (`TopicResourceCache`) to eliminate duplicate external lookup lookups and optimize retrieval latency.
+* **Zero-Redundancy Registry:** Implements a localized database lookup caching mechanism (`TopicResourceCache`) to eliminate duplicate external lookups and optimize retrieval latency.
 
 ---
 
@@ -59,35 +59,40 @@ mindsync_root/
 ├── ai_engines/                # Generative Processing Automation Core Module
 │   ├── models.py              # Extracted Notes Data and JSON Serialization Maps
 │   ├── pipeline.py            # Low-Level Google Gemini API Connection Wrappers
-│   └── views.py               # Multi-Stream Ingestion Ingestion Processing Orchestration
+│   └── views.py               # Multi-Stream Ingestion Processing Orchestration
 │
 └── planner/                   # Strategy Discovery Engine Layout
     ├── models.py              # Local Database Network Cache Maps
     └── views.py               # Search Route Operations Controllers
-## 💻 Installation & Local Environment Setup
-### Follow these precise steps to provision a local deployment runtime instance of MindSync AI.
+💻 Installation & Local Environment Setup
+Follow these precise steps to provision a local deployment runtime instance of MindSync AI.
 
-### Prerequisite Checklist
+Prerequisite Checklist
 Python 3.13 or higher installed.
 
 PostgreSQL 16 server active instance running locally.
 
 A valid Google Gemini API Key access token.
 
-### Step 1: Clone the Repository
-### Step 2: Establish a Virtual Environment
+Step 1: Clone the Repository
+Bash
+git clone [https://github.com/your-username/mindsync-ai.git](https://github.com/your-username/mindsync-ai.git)
+cd mindsync-ai
+Step 2: Establish a Virtual Environment
+Bash
 python -m venv venv
 # On Windows Activation:
 venv\Scripts\activate
 # On macOS/Linux Activation:
 source venv/bin/activate
-
-###Step 3: Install Required System Dependencies
+Step 3: Install Required System Dependencies
+Bash
 pip install --upgrade pip
 pip install -r requirements.txt
+Step 4: Environment Variables Configuration
+Create a .env configuration file within the root directory workspace:
 
-###Step 4: Environment Variables Configuration
-Create a .env configuration file within the root directory root workspace:
+Code snippet
 DEBUG=True
 SECRET_KEY=django-insecure-production-fallback-token-key
 DB_NAME=mindsync_db
@@ -95,26 +100,24 @@ DB_USER=postgres
 DB_PASSWORD=your_secure_postgresql_password
 DB_HOST=127.0.0.1
 DB_PORT=5432
-GEMINI_API_KEY=AIzaSyYourActualGoogleGeminiAPIKeyToken Here
-
-### Step 5: Database Provisioning & Schema Migrations
+GEMINI_API_KEY=AIzaSyYourActualGoogleGeminiAPIKeyTokenHere
+Step 5: Database Provisioning & Schema Migrations
 Initialize your PostgreSQL database cluster, verify that the database named mindsync_db exists, then run the active migrations to generate system relational tables:
 
 Bash
 python manage.py makemigrations
 python manage.py migrate
-
-### Step 6: Initialize an Administrative Superuser Account
+Step 6: Initialize an Administrative Superuser Account
 Bash
 python manage.py createsuperuser
-
-### Step 7: Launch the Local Development Web Server
+Step 7: Launch the Local Development Web Server
 Bash
 python manage.py runserver
 The application will boot up and map local listening ports securely at: http://127.0.0.1:8000/
 
-## 🗺️ System Architecture Blueprint
-
+🗺️ System Architecture Blueprint
+Code snippet
+graph TD
     subsc1[Client Browser: HTML5/Tailwind/JS] --- HTTP[Secure HTTP / JSON]
     
     subgraph Web_Application_Server [Django Application Tier]
@@ -132,7 +135,7 @@ The application will boot up and map local listening ports securely at: http://1
     subgraph External_Service_Mesh [Third Party API Layer]
         Controllers --> HTTPS_SDK[Google Gemini API REST Interface]
     end
-## 🗄️ Database Schema Blueprint
+🗄️ Database Schema Blueprint
 The platform relies on a strict relational data system structured across multiple core target application modules:
 
 authentication_user: Houses primary identity credentials, featuring customized indexing vectors and binary boolean system state authorization flags (is_student, is_teacher).
@@ -145,10 +148,10 @@ ai_engines_uploadedmaterial: Records historical upload events, capturing raw abs
 
 ai_engines_generatedstudypack: Maps one-to-one with active text inputs to cache synthesized structural payload summaries, mock test structures, and flashcard asset dictionaries.
 
-## 🧪 Testing Strategies
+🧪 Testing Strategies
 To run the platform's verification suites and confirm structural integrity across URLs, business logic layers, and model objects, execute:
 
 Bash
 python manage.py test
-## 📜 License
+📜 License
 Distributed under the MIT License. See LICENSE for further explicit legal information details.
