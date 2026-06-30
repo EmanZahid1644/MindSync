@@ -64,6 +64,8 @@ mindsync_root/
 └── planner/                   # Strategy Discovery Engine Layout
     ├── models.py              # Local Database Network Cache Maps
     └── views.py               # Search Route Operations Controllers
+---
+
 💻 Installation & Local Environment Setup
 Follow these precise steps to provision a local deployment runtime instance of MindSync AI.
 
