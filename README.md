@@ -1,159 +1,581 @@
-# MindSync AI - Student Success & Wellness Platform
+# 🧠 MindSync AI - Student Success & Wellness Platform
 
-MindSync AI is an enterprise-grade, web-based student success, telemetry analytics, and AI-driven pedagogical assistance platform. Built on a highly modular Django Model-View-Template (MVT) architecture and backed by a robust PostgreSQL relational database, the platform integrates intelligent document parsing with third-party generative AI pipelines (Google Gemini API) to synthesize custom learning materials while actively tracking multi-dimensional academic indicators.
-
----
-
-## 🚀 Key Features
-
-### 👤 Identity & Role-Based Access Control (RBAC)
-* **Secure Authentication:** Powered by Django's native PBKDF2 hashing algorithm with SHA-256 signatures.
-* **Granular Authorization:** Structural separation between Student and Teacher workspaces via distinct database profile extensions (`student_profile` vs. `teacher_profile`).
-* **Dynamic UI Layouts:** Client-side interfaces fluidly render features depending on active authentication flags.
-
-### 🧠 AI Ingestion & Synthesis Engine (`ai_engines`)
-* **Document Stream Pipeline:** Ingests raw `.pdf`, `.txt`, and `.md` file structures up to 5MB.
-* **Dynamic Study Packs:** Extracts textual content and dispatches structured context-prompts to the Google Gemini API (`gemini-1.5-pro`).
-* **Structured Output Engineering:** Enforces strict programmatic JSON parsing to seamlessly map responses into reusable UI flashcards and interactive quiz components.
-* **AI Coach:** Maintains persistent multi-turn conversational records (`AICoachConversation`) leveraging user-specific contextual recommendations.
-
-### 📊 Telemetry Tracking & Predictive Analytics (`dashboard`)
-* **Time-Series Performance Logging:** Records daily metrics including study allocations and self-reported biometric wellness indicators.
-* **GPA Projection Engine:** Executes deterministic linear interpolation algorithms to forecast future CGPA trends based on simulated academic variable changes.
-
-### ⚡ Optimization & Resource Discovery (`planner`)
-* **Zero-Redundancy Registry:** Implements a localized database lookup caching mechanism (`TopicResourceCache`) to eliminate duplicate external lookups and optimize retrieval latency.
+MindSync AI is an enterprise-grade, AI-powered student success and wellness platform developed using the **Django MVT (Model-View-Template)** architecture with a **PostgreSQL** database. The platform integrates intelligent learning assistance, academic telemetry, AI-powered study material generation, and personalized planning into a single web application.
 
 ---
 
-## 🛠️ Technology Stack
+# 📖 Table of Contents
 
-| Layer | Component Technology | Version / Spec |
-| :--- | :--- | :--- |
-| **Front-End** | HTML5 / CSS3 / JavaScript (ES6+) | Vanilla ECMA, Dynamic DOM |
-| **UI Framework** | Tailwind CSS | v3.4+ Production |
-| **Back-End** | Python / Django Framework | Python v3.13+ / Django v6.x LTS |
-| **Database** | PostgreSQL | v16+ Core Cluster |
-| **AI Processing**| Google Gemini API | `gemini-1.5-pro` SDK |
+- [Overview](#-overview)
+- [Core Features](#-core-features)
+- [Technology Stack](#-technology-stack)
+- [Project Structure](#-project-structure)
+- [Installation Guide](#-installation-guide)
+- [Environment Variables](#-environment-variables)
+- [Database Migration](#-database-migration)
+- [Running the Project](#-running-the-project)
+- [Application Architecture](#-application-architecture)
+- [Database Schema](#-database-schema)
+- [Testing](#-testing)
+- [Deployment](#-deployment)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 ---
 
-## 📂 System Directory Structure
+# 📌 Overview
+
+MindSync AI is designed to improve students' academic performance and learning experience using Artificial Intelligence.
+
+The platform enables students and teachers to:
+
+- 🔐 Securely authenticate into the system
+- 📊 Track academic performance
+- 🤖 Generate AI-powered study notes
+- 📝 Create quizzes automatically
+- 🧠 Generate flashcards
+- 📈 Predict future GPA
+- 💬 Chat with an AI Study Coach
+- 📅 Plan study schedules
+- 📚 Discover learning resources
+
+The application follows a modular Django architecture where every major functionality is implemented inside an independent Django app.
+
+---
+
+# 🚀 Core Features
+
+## 👤 Authentication & Role-Based Access
+
+- Secure Login & Registration
+- Django Password Hashing (PBKDF2)
+- Student Dashboard
+- Teacher Dashboard
+- Session Authentication
+- Role-Based Access Control (RBAC)
+
+---
+
+## 🤖 AI Study Engine
+
+The AI Engine supports:
+
+- PDF Upload
+- TXT Upload
+- Markdown Upload
+- AI Notes Generation
+- Flashcard Generation
+- Quiz Generation
+- Key Concept Extraction
+- Personalized AI Study Coach
+
+Powered by **Google Gemini API**.
+
+---
+
+## 📊 Academic Dashboard
+
+Students can monitor:
+
+- Daily Study Hours
+- Wellness Score
+- Academic Progress
+- Performance Analytics
+- Historical Telemetry
+
+---
+
+## 🎯 GPA Prediction
+
+Features include:
+
+- Current CGPA Tracking
+- Semester Simulation
+- GPA Forecasting
+- Academic Performance Prediction
+
+---
+
+## 📅 Smart Planner
+
+Planner Module provides:
+
+- Study Planning
+- Cached Learning Resources
+- Topic Discovery
+- Personalized Recommendations
+
+---
+
+# 🛠 Technology Stack
+
+| Layer | Technology |
+|--------|------------|
+| Backend | Django 6.x |
+| Programming Language | Python 3.13+ |
+| Frontend | HTML5 |
+| Styling | CSS3 |
+| UI Framework | Tailwind CSS |
+| JavaScript | Vanilla JavaScript (ES6+) |
+| Database | PostgreSQL |
+| ORM | Django ORM |
+| AI Engine | Google Gemini 1.5 Pro |
+
+---
+
+# 📂 Project Structure
 
 ```text
-mindsync_root/
+MindSync/
 │
-├── mindsync_core/              # Core System Setting Engine
-│   ├── settings.py            # Main Global Project Settings
-│   └── urls.py                # Main System Root Routing Engine
+├── apps/
+│   ├── authentication/
+│   ├── dashboard/
+│   ├── ai_engines/
+│   └── planner/
 │
-├── authentication/            # User Custom Identity Management Sub-app
-│   ├── models.py              # Identity Database Tables Schema Definitions
-│   ├── views.py               # User Verification & Dynamic Access Controls
-│   └── templates/             # Onboarding Login/Signup Layout Interfaces
+├── mindsync_core/
+│   ├── settings.py
+│   ├── urls.py
+│   ├── asgi.py
+│   └── wsgi.py
 │
-├── dashboard/                 # Metric Performance Telemetry Processing Engine
-│   ├── models.py              # Telemetry, Simulation, and Linear Tracker Logs
-│   └── views.py               # Computational Models & View Layout Assemblers
-│
-├── ai_engines/                # Generative Processing Automation Core Module
-│   ├── models.py              # Extracted Notes Data and JSON Serialization Maps
-│   ├── pipeline.py            # Low-Level Google Gemini API Connection Wrappers
-│   └── views.py               # Multi-Stream Ingestion Processing Orchestration
-│
-└── planner/                   # Strategy Discovery Engine Layout
-    ├── models.py              # Local Database Network Cache Maps
-    └── views.py               # Search Route Operations Controllers
+├── manage.py
+├── requirements.txt
+├── README.md
+└── .gitignore
+```
+
 ---
 
-💻 Installation & Local Environment Setup
-Follow these precise steps to provision a local deployment runtime instance of MindSync AI.
+# ⚙️ Installation Guide
 
-Prerequisite Checklist
-Python 3.13 or higher installed.
+## Step 1 — Clone Repository
 
-PostgreSQL 16 server active instance running locally.
+```bash
+git clone https://github.com/your-username/MindSync.git
 
-A valid Google Gemini API Key access token.
+cd MindSync
+```
 
-Step 1: Clone the Repository
-Bash
-git clone [https://github.com/your-username/mindsync-ai.git](https://github.com/your-username/mindsync-ai.git)
-cd mindsync-ai
-Step 2: Establish a Virtual Environment
-Bash
-python -m venv venv
-# On Windows Activation:
-venv\Scripts\activate
-# On macOS/Linux Activation:
-source venv/bin/activate
-Step 3: Install Required System Dependencies
-Bash
+---
+
+## Step 2 — Create Virtual Environment
+
+### Windows
+
+```bash
+python -m venv env
+
+env\Scripts\activate
+```
+
+### Linux / macOS
+
+```bash
+python3 -m venv env
+
+source env/bin/activate
+```
+
+---
+
+## Step 3 — Install Dependencies
+
+```bash
 pip install --upgrade pip
+
 pip install -r requirements.txt
-Step 4: Environment Variables Configuration
-Create a .env configuration file within the root directory workspace:
+```
 
-Code snippet
+---
+
+# 🔐 Environment Variables
+
+Create a `.env` file in the project root.
+
+```env
 DEBUG=True
-SECRET_KEY=django-insecure-production-fallback-token-key
+
+SECRET_KEY=your_secret_key
+
 DB_NAME=mindsync_db
+
 DB_USER=postgres
-DB_PASSWORD=your_secure_postgresql_password
-DB_HOST=127.0.0.1
+
+DB_PASSWORD=your_password
+
+DB_HOST=localhost
+
 DB_PORT=5432
-GEMINI_API_KEY=AIzaSyYourActualGoogleGeminiAPIKeyTokenHere
-Step 5: Database Provisioning & Schema Migrations
-Initialize your PostgreSQL database cluster, verify that the database named mindsync_db exists, then run the active migrations to generate system relational tables:
 
-Bash
+GEMINI_API_KEY=your_google_gemini_api_key
+```
+
+> ⚠️ **Never upload your `.env` file or API keys to GitHub.**
+
+---
+
+# 🗄 Database Migration
+
+Run the following commands:
+
+```bash
 python manage.py makemigrations
+
 python manage.py migrate
-Step 6: Initialize an Administrative Superuser Account
-Bash
+```
+
+---
+
+# 👤 Create Superuser
+
+```bash
 python manage.py createsuperuser
-Step 7: Launch the Local Development Web Server
-Bash
+```
+
+---
+
+# ▶️ Running the Project
+
+```bash
 python manage.py runserver
-The application will boot up and map local listening ports securely at: http://127.0.0.1:8000/
+```
 
-🗺️ System Architecture Blueprint
-Code snippet
-graph TD
-    subsc1[Client Browser: HTML5/Tailwind/JS] --- HTTP[Secure HTTP / JSON]
-    
-    subgraph Web_Application_Server [Django Application Tier]
-        HTTP --> Routing[Django URL Dispatcher]
-        Routing --> Controllers[Django Views & App Logic]
-        Controllers --> Context[MVT Template Processor Engine]
-        Context --> subsc1
-    end
-    
-    subgraph Persistent_Data_Tier [Infrastructure Store]
-        Controllers --- ORM[Django ORM Object Mapping]
-        ORM --> DB[(PostgreSQL Database Instance)]
-    end
-    
-    subgraph External_Service_Mesh [Third Party API Layer]
-        Controllers --> HTTPS_SDK[Google Gemini API REST Interface]
-    end
-🗄️ Database Schema Blueprint
-The platform relies on a strict relational data system structured across multiple core target application modules:
+Open your browser and visit:
 
-authentication_user: Houses primary identity credentials, featuring customized indexing vectors and binary boolean system state authorization flags (is_student, is_teacher).
+```
+http://127.0.0.1:8000/
+```
 
-student_profile: Extends identity records one-to-one to track academic metrics including institutional year and running CGPA indices.
+---
+# 🏗 Application Architecture
 
-dashboard_completestudenttelemetry: A heavy time-series tracking repository logging multi-variable performance and wellness inputs.
+```text
+                    Client Browser
+                          │
+                          ▼
+                 Django URL Dispatcher
+                          │
+                          ▼
+                  Views (Business Logic)
+                          │
+          ┌───────────────┼────────────────┐
+          ▼               ▼                ▼
+ Authentication      AI Engines      Dashboard
+          │               │                │
+          └───────────────┼────────────────┘
+                          ▼
+                     Django ORM
+                          │
+                          ▼
+                  PostgreSQL Database
+                          │
+                          ▼
+                 Google Gemini API
+```
 
-ai_engines_uploadedmaterial: Records historical upload events, capturing raw absolute path destinations alongside binary-extracted plaintext formats.
+---
 
-ai_engines_generatedstudypack: Maps one-to-one with active text inputs to cache synthesized structural payload summaries, mock test structures, and flashcard asset dictionaries.
+# 📦 Django Applications
 
-🧪 Testing Strategies
-To run the platform's verification suites and confirm structural integrity across URLs, business logic layers, and model objects, execute:
+The project is divided into independent Django applications for better maintainability and scalability.
 
-Bash
+## 🔐 Authentication
+
+Responsible for:
+
+- User Registration
+- User Login
+- Logout
+- Role-Based Authentication
+- Student & Teacher Profiles
+
+---
+
+## 📊 Dashboard
+
+Responsible for:
+
+- Student Dashboard
+- Teacher Dashboard
+- Academic Telemetry
+- CGPA Prediction
+- Performance Analytics
+- Semester Simulation
+
+---
+
+## 🤖 AI Engines
+
+Responsible for:
+
+- PDF Parsing
+- TXT Processing
+- Markdown Processing
+- AI Notes Generation
+- Flashcard Generation
+- Quiz Generation
+- AI Study Coach
+- Google Gemini Integration
+
+---
+
+## 📅 Planner
+
+Responsible for:
+
+- Study Planner
+- Cached Learning Resources
+- Topic Search
+- Resource Discovery
+- Learning Recommendations
+
+---
+
+# 🗄 Database Schema
+
+The application uses PostgreSQL as the primary relational database.
+
+## Main Database Tables
+
+| Table | Description |
+|-------|-------------|
+| authentication_user | Stores user authentication information |
+| student_profile | Student academic profile |
+| teacher_profile | Teacher profile |
+| CompleteStudentTelemetry | Daily study and wellness logs |
+| UploadedMaterial | Uploaded learning resources |
+| GeneratedStudyPack | AI-generated notes and quizzes |
+| AICoachConversation | AI Coach conversation history |
+| TopicResourceCache | Cached educational resources |
+
+---
+
+## Entity Relationships
+
+```text
+User
+ │
+ ├──────── Student Profile
+ │
+ ├──────── Teacher Profile
+ │
+ ├──────── Uploaded Material
+ │                │
+ │                ▼
+ │       Generated Study Pack
+ │
+ ├──────── AI Coach Conversations
+ │
+ └──────── Student Telemetry
+```
+
+---
+
+# 🤖 AI Workflow
+
+The AI pipeline follows the workflow below.
+
+```text
+Upload PDF / TXT / Markdown
+              │
+              ▼
+      Extract Raw Text
+              │
+              ▼
+     Google Gemini API
+              │
+              ▼
+      AI Processing Engine
+              │
+     ┌────────┼───────────┐
+     ▼        ▼           ▼
+ Summary  Flashcards    Quiz
+              │
+              ▼
+      Stored in Database
+```
+
+---
+
+# 📊 Key Features Summary
+
+| Feature | Status |
+|---------|:------:|
+| User Authentication | ✅ |
+| Student Dashboard | ✅ |
+| Teacher Dashboard | ✅ |
+| PostgreSQL Database | ✅ |
+| Google Gemini API | ✅ |
+| AI Notes Generator | ✅ |
+| Flashcards | ✅ |
+| Quiz Generator | ✅ |
+| AI Study Coach | ✅ |
+| Study Planner | ✅ |
+| Telemetry Analytics | ✅ |
+| GPA Prediction | ✅ |
+
+---
+
+# 📁 Important Files
+
+| File | Purpose |
+|------|---------|
+| manage.py | Django management commands |
+| settings.py | Global Django configuration |
+| urls.py | URL routing |
+| wsgi.py | Production WSGI entry point |
+| asgi.py | ASGI configuration |
+| requirements.txt | Python dependencies |
+| README.md | Project documentation |
+| .gitignore | Git ignored files |
+
+---
+# 🔌 Google Gemini API Integration
+
+MindSync AI integrates with the Google Gemini API to provide intelligent learning assistance.
+
+### AI Features
+
+- 📄 AI Notes Generation
+- 📝 Quiz Generation
+- 🧠 Flashcard Generation
+- 🎯 Key Concept Extraction
+- 💬 AI Study Coach
+
+---
+
+# 🧪 Running Tests
+
+Run the test suite using:
+
+```bash
 python manage.py test
-📜 License
-Distributed under the MIT License. See LICENSE for further explicit legal information details.
+```
+
+---
+
+# 🚀 Deployment
+
+This project can be deployed on any cloud platform that supports Python and Django.
+
+## Recommended Platforms
+
+- Render
+- Railway
+- PythonAnywhere
+- DigitalOcean
+- AWS EC2
+- Azure App Service
+
+### Production Stack
+
+- Django
+- Gunicorn
+- WhiteNoise
+- PostgreSQL
+- Google Gemini API
+
+---
+
+# 🌟 Future Improvements
+
+The following features are planned for future releases:
+
+- Email Verification
+- Password Reset via Email
+- AI Chat Memory
+- Attendance Tracking
+- Assignment Submission Portal
+- Teacher Analytics Dashboard
+- Student Performance Reports
+- Notification System
+- REST API Support
+- Docker Deployment
+- CI/CD Pipeline
+- Mobile Application
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome!
+
+1. Fork the repository
+
+2. Create a new branch
+
+```bash
+git checkout -b feature-name
+```
+
+3. Commit your changes
+
+```bash
+git commit -m "Add new feature"
+```
+
+4. Push your branch
+
+```bash
+git push origin feature-name
+```
+
+5. Open a Pull Request
+
+---
+
+# 📜 License
+
+This project is licensed under the **MIT License**.
+
+Feel free to use, modify, and distribute this project according to the license terms.
+
+---
+
+# 👨‍💻 Developer
+
+**Eman Zahid**
+
+BS Computer Science Student
+
+### Skills
+
+- Python
+- Django
+- PostgreSQL
+- HTML5
+- CSS3
+- JavaScript
+- Tailwind CSS
+- Artificial Intelligence
+- Google Gemini API
+
+---
+
+# ⭐ Support
+
+If you found this project helpful, please consider giving it a **⭐ Star** on GitHub.
+
+It helps others discover the project and motivates future development.
+
+---
+
+# 🙏 Acknowledgements
+
+Special thanks to:
+
+- Django Framework
+- PostgreSQL
+- Google Gemini API
+- Tailwind CSS
+- Open Source Community
+
+---
+
+<p align="center">
+
+Made with ❤️ using Django, PostgreSQL & Google Gemini AI
+
+</p>
