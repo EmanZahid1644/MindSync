@@ -51,17 +51,22 @@ The project uses separate Django apps for authentication, dashboards, AI feature
 
 ## Application Screenshots
 
-The following screenshots show the local MindSync AI interface. Store the image files in `docs/screenshots/` with these exact filenames.
+Explore the MindSync AI interface through screenshots captured from the running application.
 
 ### Student Dashboard
+![MindSync Student Dashboard](docs/screenshots/dashboard.png)
 
 ### AI Study Coach
+![MindSync AI Coach](docs/screenshots/ai-coach.png)
 
 ### AI Study Pack Generator
+![MindSync Study Pack Generator](docs/screenshots/study-pack.png)
 
 ### CGPA Prediction
+![MindSync CGPA Prediction](docs/screenshots/cgpa-prediction.png)
 
 ### Resource Discovery
+![MindSync Resource Discovery](docs/screenshots/resource-discovery.png)
 
 > A separate study planner screenshot is not included because it has not been captured. The planner remains described in the features section.
 
